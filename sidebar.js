@@ -7,6 +7,11 @@ let pageMarkdown = '';
 let settings = null;
 let currentService = '';
 let currentUrl = '';
+let welcomeMessageAdded = false;
+let usageStats = {
+  sitesVisited: new Set(),
+  questionsAsked: 0
+};
 
 const quickPromptTemplates = {
   summarize: 'Please provide a concise summary of the main points and key information from this web page.',
@@ -35,6 +40,8 @@ const messageInput = document.getElementById('messageInput');
 const sendBtn = document.getElementById('sendBtn');
 const closeBtn = document.getElementById('closeBtn');
 const settingsBtn = document.getElementById('settingsBtn');
+const clearPageBtn = document.getElementById('clearPageBtn');
+const clearAllBtn = document.getElementById('clearAllBtn');
 const pageInfo = document.getElementById('pageInfo');
 const pageTitle = document.getElementById('pageTitle');
 const serviceBadge = document.getElementById('serviceBadge');
@@ -62,6 +69,62 @@ function loadSettings() {
 }
 
 loadSettings();
+
+// Load usage stats
+function loadUsageStats() {
+  chrome.storage.local.get(['usageStats'], (result) => {
+    if (result.usageStats) {
+      usageStats.sitesVisited = new Set(result.usageStats.sitesVisited || []);
+      usageStats.questionsAsked = result.usageStats.questionsAsked || 0;
+    }
+    updateStatsDisplay();
+  });
+}
+
+// Save usage stats
+function saveUsageStats() {
+  const statsToSave = {
+    sitesVisited: Array.from(usageStats.sitesVisited),
+    questionsAsked: usageStats.questionsAsked
+  };
+  chrome.storage.local.set({ usageStats: statsToSave });
+}
+
+// Update stats display
+function updateStatsDisplay() {
+  const sitesCount = document.getElementById('sitesCount');
+  const questionsCount = document.getElementById('questionsCount');
+  
+  if (sitesCount) {
+    sitesCount.textContent = usageStats.sitesVisited.size;
+  }
+  if (questionsCount) {
+    questionsCount.textContent = usageStats.questionsAsked;
+  }
+}
+
+// Track site visit
+function trackSiteVisit(url) {
+  try {
+    const hostname = new URL(url).hostname;
+    if (!usageStats.sitesVisited.has(hostname)) {
+      usageStats.sitesVisited.add(hostname);
+      saveUsageStats();
+      updateStatsDisplay();
+    }
+  } catch (error) {
+    console.error('Error tracking site visit:', error);
+  }
+}
+
+// Track question asked
+function trackQuestionAsked() {
+  usageStats.questionsAsked++;
+  saveUsageStats();
+  updateStatsDisplay();
+}
+
+loadUsageStats();
 
 // Initialize Mermaid
 if (typeof mermaid !== 'undefined') {
@@ -118,6 +181,7 @@ function loadConversationHistory(url) {
       // Clear current messages
       messages = [];
       messagesList.innerHTML = '';
+      welcomeMessageAdded = false;
       
       // Restore messages
       savedMessages.forEach(msg => {
@@ -125,17 +189,102 @@ function loadConversationHistory(url) {
         addMessageWithoutSave(msg.role, msg.content, msg.isError, timestamp);
       });
       
+      // Mark welcome message as added if first message is from assistant
+      if (messages.length > 0 && messages[0].role === 'assistant') {
+        welcomeMessageAdded = true;
+      }
+      
       // Hide quick prompts if there are user messages
       if (messages.some(m => m.role === 'user')) {
         quickPrompts.style.display = 'none';
       }
     } else {
-      // No history, add welcome message
-      if (pageContent) {
+      // No history, add welcome message if not already added
+      if (pageContent && !welcomeMessageAdded) {
+        welcomeMessageAdded = true;
         addMessage('assistant', `I've analyzed the page "${pageContent.title}". You can ask me anything about it, or use one of the quick prompts below!`);
       }
     }
   });
+}
+
+// Show settings confirmation message
+function showSettingsConfirmation(message) {
+  settingsConfirmation.innerHTML = message;
+  settingsConfirmation.classList.add('show');
+  
+  setTimeout(() => {
+    settingsConfirmation.classList.remove('show');
+  }, 3000);
+}
+
+// Clear current page chat history
+function clearCurrentPageChat() {
+  if (!currentUrl) {
+    alert('No page loaded yet!');
+    return;
+  }
+  
+  if (confirm(`Clear all chat history for this page?\n\n${pageContent?.title || currentUrl}`)) {
+    const historyKey = `conversation_${currentUrl}`;
+    
+    chrome.storage.local.remove([historyKey], () => {
+      // Clear UI
+      messages = [];
+      messagesList.innerHTML = '';
+      welcomeMessageAdded = false;
+      quickPrompts.style.display = 'flex';
+      
+      // Add welcome message again
+      if (pageContent) {
+        welcomeMessageAdded = true;
+        addMessage('assistant', `I've analyzed the page "${pageContent.title}". You can ask me anything about it, or use one of the quick prompts below!`);
+      }
+      
+      // Show confirmation
+      showSettingsConfirmation('Chat history cleared for this page! 🗑️');
+    });
+  }
+}
+
+// Clear all conversations and reset stats
+function clearAllData() {
+  if (confirm('⚠️ Clear ALL conversations across all websites AND reset usage statistics?\n\nThis action cannot be undone!')) {
+    // Get all storage keys
+    chrome.storage.local.get(null, (items) => {
+      const keysToRemove = [];
+      
+      // Find all conversation keys
+      for (const key in items) {
+        if (key.startsWith('conversation_') || key === 'usageStats') {
+          keysToRemove.push(key);
+        }
+      }
+      
+      // Remove all conversations and stats
+      chrome.storage.local.remove(keysToRemove, () => {
+        // Reset stats
+        usageStats.sitesVisited = new Set();
+        usageStats.questionsAsked = 0;
+        updateStatsDisplay();
+        
+        // Clear current chat
+        messages = [];
+        messagesList.innerHTML = '';
+        welcomeMessageAdded = false;
+        quickPrompts.style.display = 'flex';
+        
+        // Add welcome message again
+        if (pageContent) {
+          welcomeMessageAdded = true;
+          addMessage('assistant', `I've analyzed the page "${pageContent.title}". You can ask me anything about it, or use one of the quick prompts below!`);
+        }
+        
+        // Show confirmation
+        showSettingsConfirmation('All conversations and stats cleared! 🗑️🌐');
+      });
+    });
+  }
 }
 
 // Listen for page content from parent
@@ -143,10 +292,19 @@ window.addEventListener('message', (event) => {
   if (event.data.type === 'PAGE_CONTENT') {
     pageContent = event.data.content;
     pageMarkdown = htmlToMarkdown(pageContent.htmlContent || '');
+    
+    // Reset welcome message flag if URL changed
+    if (currentUrl !== pageContent.url) {
+      welcomeMessageAdded = false;
+    }
+    
     currentUrl = pageContent.url;
     
-    // Update UI
-    pageTitle.textContent = pageContent.title;
+    // Track site visit
+    trackSiteVisit(currentUrl);
+    
+    // Update UI with custom prefix
+    pageTitle.textContent = `Answering everything on this page from ${pageContent.title}`;
     pageInfo.style.display = 'block';
     
     // Load conversation history for this URL
@@ -164,6 +322,11 @@ window.addEventListener('message', (event) => {
     messages.forEach(msg => {
       addMessageWithoutSave(msg.role, msg.content, msg.isError, msg.timestamp);
     });
+    
+    // Mark welcome message as added if messages exist
+    if (messages.length > 0 && messages[0].role === 'assistant') {
+      welcomeMessageAdded = true;
+    }
   }
 });
 
@@ -407,6 +570,9 @@ async function sendMessage(messageText = null) {
   // Add user message
   addMessage('user', text);
   
+  // Track question asked
+  trackQuestionAsked();
+  
   isLoading = true;
   sendBtn.disabled = true;
   messageInput.disabled = true;
@@ -465,6 +631,15 @@ closeBtn.addEventListener('click', () => {
   window.parent.postMessage({ type: 'CLOSE_SIDEBAR' }, '*');
 });
 
+// Clear buttons
+if (clearPageBtn) {
+  clearPageBtn.addEventListener('click', clearCurrentPageChat);
+}
+
+if (clearAllBtn) {
+  clearAllBtn.addEventListener('click', clearAllData);
+}
+
 // Modal toggle
 if (modalToggleBtn) {
   modalToggleBtn.addEventListener('click', () => {
@@ -506,6 +681,81 @@ function updateServiceSettingsVisibility() {
   document.getElementById('geminiSettings').style.display = selected === 'gemini' ? 'block' : 'none';
   document.getElementById('ollamaSettings').style.display = selected === 'ollama' ? 'block' : 'none';
   document.getElementById('openrouterSettings').style.display = selected === 'openrouter' ? 'block' : 'none';
+  
+  // Fetch Ollama models if Ollama is selected
+  if (selected === 'ollama') {
+    fetchOllamaModelsSidebar();
+  }
+}
+
+// Fetch available models from Ollama API
+async function fetchOllamaModelsSidebar() {
+  const ollamaUrl = document.getElementById('ollamaUrlInput').value || 'http://localhost:11434';
+  const ollamaModelSelect = document.getElementById('ollamaModelInput');
+  // Try both sidebar and modal help text elements
+  const helpText = document.getElementById('ollamaModelHelpSidebar') || document.getElementById('ollamaModelHelpModal');
+  const refreshBtn = document.getElementById('refreshOllamaModelsSidebar') || document.getElementById('refreshOllamaModelsModal');
+  
+  // Store the currently selected value
+  const currentValue = ollamaModelSelect.value;
+  
+  // Show loading state
+  ollamaModelSelect.innerHTML = '<option value="">Loading models...</option>';
+  ollamaModelSelect.disabled = true;
+  if (refreshBtn) refreshBtn.disabled = true;
+  
+  try {
+    const response = await fetch(`${ollamaUrl}/api/tags`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.models && data.models.length > 0) {
+      // Clear and populate dropdown with models
+      ollamaModelSelect.innerHTML = '';
+      
+      data.models.forEach(model => {
+        const option = document.createElement('option');
+        option.value = model.name;
+        option.textContent = model.name;
+        ollamaModelSelect.appendChild(option);
+      });
+      
+      // Restore previously selected value if it exists in the list
+      if (currentValue && data.models.some(m => m.name === currentValue)) {
+        ollamaModelSelect.value = currentValue;
+      }
+      
+      if (helpText) {
+        helpText.textContent = `Found ${data.models.length} model(s)`;
+        helpText.style.color = '#10b981';
+      }
+    } else {
+      ollamaModelSelect.innerHTML = '<option value="">No models found</option>';
+      if (helpText) {
+        helpText.textContent = 'No models found. Pull a model using "ollama pull <model-name>"';
+        helpText.style.color = '#f59e0b';
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching Ollama models:', error);
+    ollamaModelSelect.innerHTML = '<option value="">Error loading models</option>';
+    if (helpText) {
+      helpText.textContent = `Error: ${error.message}. Make sure Ollama is running at ${ollamaUrl}`;
+      helpText.style.color = '#ef4444';
+    }
+  } finally {
+    ollamaModelSelect.disabled = false;
+    if (refreshBtn) refreshBtn.disabled = false;
+  }
 }
 
 // Toggle settings panel
@@ -520,6 +770,26 @@ settingsPanelClose.addEventListener('click', () => {
 
 // Service selector change
 serviceSelect.addEventListener('change', updateServiceSettingsVisibility);
+
+// Refresh Ollama models button (works for both sidebar and modal)
+const refreshOllamaModelsSidebarBtn = document.getElementById('refreshOllamaModelsSidebar');
+const refreshOllamaModelsModalBtn = document.getElementById('refreshOllamaModelsModal');
+if (refreshOllamaModelsSidebarBtn) {
+  refreshOllamaModelsSidebarBtn.addEventListener('click', fetchOllamaModelsSidebar);
+}
+if (refreshOllamaModelsModalBtn) {
+  refreshOllamaModelsModalBtn.addEventListener('click', fetchOllamaModelsSidebar);
+}
+
+// Fetch models when Ollama URL changes
+const ollamaUrlInput = document.getElementById('ollamaUrlInput');
+if (ollamaUrlInput) {
+  ollamaUrlInput.addEventListener('blur', () => {
+    if (serviceSelect.value === 'ollama') {
+      fetchOllamaModelsSidebar();
+    }
+  });
+}
 
 // Save settings
 saveSettingsBtn.addEventListener('click', () => {

@@ -63,8 +63,14 @@
           <input type="text" class="settings-input" id="ollamaUrlInput" placeholder="http://localhost:11434">
         </div>
         <div class="settings-group">
-          <label class="settings-label">Model</label>
-          <input type="text" class="settings-input" id="ollamaModelInput" placeholder="llama2">
+          <label class="settings-label">
+            Model
+            <button type="button" class="settings-button" id="refreshOllamaModelsSidebar" title="Refresh models" style="padding: 4px 8px; font-size: 12px; display: inline-block; margin-left: 8px;">🔄</button>
+          </label>
+          <select class="settings-select" id="ollamaModelInput">
+            <option value="">Loading models...</option>
+          </select>
+          <div class="settings-help" id="ollamaModelHelpSidebar">Select a model from your local Ollama instance</div>
         </div>
       </div>
       
@@ -94,10 +100,21 @@
           <h1>OpenCopilot</h1>
         </div>
         <div class="header-actions">
+          <button class="icon-button" id="clearPageBtn" title="Clear Current Page Chat">🗑️</button>
+          <button class="icon-button" id="clearAllBtn" title="Clear All Conversations & Reset Stats">🗑️🌐</button>
           <button class="icon-button" id="modalToggleBtn" title="Toggle Modal View">⛶</button>
           <button class="icon-button" id="settingsBtn" title="Settings">⚙️</button>
-          <button class="icon-button" id="closeBtn" title="Close (Cmd+Shift+H)">✕</button>
+          <button class="icon-button" id="closeBtn" title="Close (Ctrl+Shift+O)">✕</button>
         </div>
+      </div>
+      
+      <div class="usage-stats" id="usageStats">
+        <span class="stat-item" title="Sites used on">
+          🌐 <span id="sitesCount">0</span>
+        </span>
+        <span class="stat-item" title="Questions asked">
+          ⁉️ <span id="questionsCount">0</span>
+        </span>
       </div>
       
       <div class="page-info" id="pageInfo" style="display: none;">

@@ -18,13 +18,13 @@ chrome.runtime.onInstalled.addListener((details) => {
       settings: {
         service: 'groq',
         groqApiKey: '',
-        groqModel: 'mixtral-8x7b-32768',
+        groqModel: 'openai/gpt-oss-20b',
         geminiApiKey: '',
-        geminiModel: 'gemini-pro',
+        geminiModel: 'gemini-2.5-flash-preview-09-2025',
         openRouterApiKey: '',
-        openRouterModel: 'anthropic/claude-3.5-sonnet',
+        openRouterModel: 'z-ai/glm-4.5-air:free',
         ollamaUrl: 'http://localhost:11434',
-        ollamaModel: 'llama2'
+        ollamaModel: 'granite4:350m'
       }
     });
     

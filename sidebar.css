@@ -86,6 +86,25 @@ body {
   box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
 }
 
+/* Clear button styles - destructive actions */
+#clearPageBtn,
+#clearAllBtn {
+  background: rgba(239, 68, 68, 0.05);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+#clearPageBtn:hover,
+#clearAllBtn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+#clearAllBtn {
+  font-size: 13px;
+}
+
 .page-info {
   background: rgba(96, 165, 250, 0.05);
   border: 1px solid rgba(96, 165, 250, 0.1);
@@ -116,6 +135,37 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.usage-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: rgba(96, 165, 250, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(96, 165, 250, 0.1);
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #cbd5e0;
+  font-weight: 500;
+  cursor: help;
+  transition: color 0.2s;
+}
+
+.stat-item:hover {
+  color: #60a5fa;
+}
+
+.stat-item span {
+  color: #60a5fa;
+  font-weight: 600;
 }
 
 /* Messages Container */
@@ -195,7 +245,6 @@ body {
 
 .message:hover .message-bubble {
   background: rgba(96, 165, 250, 0.03);
-  border-left-color: rgba(96, 165, 250, 0.3);
 }
 
 .message-header {

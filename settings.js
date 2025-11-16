@@ -11,6 +11,8 @@ const sections = {
 const saveBtn = document.getElementById('saveBtn');
 const resetBtn = document.getElementById('resetBtn');
 const statusMessage = document.getElementById('statusMessage');
+const refreshOllamaModelsBtn = document.getElementById('refreshOllamaModels');
+const ollamaModelSelect = document.getElementById('ollamaModel');
 
 // Show/hide sections based on selected service
 function updateSections() {
@@ -29,6 +31,72 @@ function updateSections() {
     card.classList.remove('active');
   });
   document.querySelector(`label[for="${selectedService}"]`).classList.add('active');
+  
+  // Fetch Ollama models if Ollama is selected
+  if (selectedService === 'ollama') {
+    fetchOllamaModels();
+  }
+}
+
+// Fetch available models from Ollama API
+async function fetchOllamaModels() {
+  const ollamaUrl = document.getElementById('ollamaUrl').value || 'http://localhost:11434';
+  const helpText = document.getElementById('ollamaModelHelp');
+  
+  // Store the currently selected value
+  const currentValue = ollamaModelSelect.value;
+  
+  // Show loading state
+  ollamaModelSelect.innerHTML = '<option value="">Loading models...</option>';
+  ollamaModelSelect.disabled = true;
+  refreshOllamaModelsBtn.disabled = true;
+  
+  try {
+    const response = await fetch(`${ollamaUrl}/api/tags`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.models && data.models.length > 0) {
+      // Clear and populate dropdown with models
+      ollamaModelSelect.innerHTML = '';
+      
+      data.models.forEach(model => {
+        const option = document.createElement('option');
+        option.value = model.name;
+        option.textContent = model.name;
+        ollamaModelSelect.appendChild(option);
+      });
+      
+      // Restore previously selected value if it exists in the list
+      if (currentValue && data.models.some(m => m.name === currentValue)) {
+        ollamaModelSelect.value = currentValue;
+      }
+      
+      helpText.textContent = `Found ${data.models.length} model(s) in your local Ollama instance`;
+      helpText.className = 'form-text text-success';
+    } else {
+      ollamaModelSelect.innerHTML = '<option value="">No models found</option>';
+      helpText.textContent = 'No models found. Please pull a model using "ollama pull <model-name>"';
+      helpText.className = 'form-text text-warning';
+    }
+  } catch (error) {
+    console.error('Error fetching Ollama models:', error);
+    ollamaModelSelect.innerHTML = '<option value="">Error loading models</option>';
+    helpText.textContent = `Error: ${error.message}. Make sure Ollama is running at ${ollamaUrl}`;
+    helpText.className = 'form-text text-danger';
+  } finally {
+    ollamaModelSelect.disabled = false;
+    refreshOllamaModelsBtn.disabled = false;
+  }
 }
 
 // Load settings
@@ -182,6 +250,15 @@ serviceCards.forEach(card => {
 
 saveBtn.addEventListener('click', saveSettings);
 resetBtn.addEventListener('click', resetSettings);
+refreshOllamaModelsBtn.addEventListener('click', fetchOllamaModels);
+
+// Also fetch models when Ollama URL changes
+document.getElementById('ollamaUrl').addEventListener('blur', () => {
+  const selectedService = document.querySelector('input[name="service"]:checked').value;
+  if (selectedService === 'ollama') {
+    fetchOllamaModels();
+  }
+});
 
 // Initialize
 loadSettings();

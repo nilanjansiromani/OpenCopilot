@@ -19,7 +19,8 @@
         
         <div class="alert alert-info mb-4">
           <strong>Keyboard Shortcut:</strong> Press 
-          <span class="kbd">⌘</span> + <span class="kbd">Shift</span> + <span class="kbd">H</span> 
+          <span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">O</span> 
+          (or <span class="kbd">⌘</span> + <span class="kbd">Shift</span> + <span class="kbd">O</span> on Mac) 
           on any web page to open the AI co-pilot sidebar.
         </div>
         
@@ -107,10 +108,17 @@
           </div>
           
           <div class="mb-3">
-            <label for="ollamaModel" class="form-label">Model Name</label>
-            <input type="text" class="form-control" id="ollamaModel" placeholder="e.g., llama2">
-            <div class="form-text">
-              Enter the name of the model you've downloaded (e.g., llama2, mistral, codellama)
+            <label for="ollamaModel" class="form-label">
+              Model Name
+              <button type="button" class="btn btn-sm btn-outline-secondary ms-2" id="refreshOllamaModels" title="Refresh models list">
+                🔄
+              </button>
+            </label>
+            <select class="form-control" id="ollamaModel">
+              <option value="">Loading models...</option>
+            </select>
+            <div class="form-text" id="ollamaModelHelp">
+              Select a model from your local Ollama instance
             </div>
           </div>
         </div>

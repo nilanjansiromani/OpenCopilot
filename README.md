@@ -1,41 +1,93 @@
-# ⚡ OpenCopilot - AI Assistant for Chrome
+# ⚡ OpenCopilot - Your AI Companion for the Web
 
-A powerful, beautiful Chrome extension that brings AI co-pilot functionality to any web page. Analyze, summarize, and interact with web content using multiple AI services.
+<div align="center">
 
-**✨ Pure Vanilla JavaScript - No build process required!**
+**Transform any webpage into an intelligent conversation. 100% customizable. 100% private (if you want).**
 
-![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-4285F4?style=flat-square)
-![Vanilla JS](https://img.shields.io/badge/Vanilla-JavaScript-F7DF1E?style=flat-square)
+*Works on Chrome, Edge, Brave, Opera, Vivaldi & all Chromium-based browsers*
+
+![Chromium Compatible](https://img.shields.io/badge/Chromium-Compatible-4285F4?style=flat-square)
+![Multi-AI](https://img.shields.io/badge/AI-Multi--Provider-00D9FF?style=flat-square)
+![Privacy First](https://img.shields.io/badge/Privacy-100%25_Local_Option-10b981?style=flat-square)
 ![Version](https://img.shields.io/badge/Version-1.1.0-blue?style=flat-square)
+
+</div>
+
+---
+
+## 🌟 What Makes OpenCopilot Different?
+
+### 🔒 **Your Data, Your Rules**
+- **100% Local Mode Available** - Use Ollama and your data never leaves your machine
+- **Choose Your Provider** - Switch between cloud (fast) or local (private) AI
+- **No Vendor Lock-in** - Works with Groq, Gemini, Ollama, OpenRouter, and more
+
+### 🌐 **Universal Compatibility**
+Built for **all Chromium-based browsers**:
+- ✅ Google Chrome
+- ✅ Microsoft Edge
+- ✅ Brave Browser
+- ✅ Opera / Opera GX
+- ✅ Vivaldi
+- ✅ Arc Browser
+- ✅ Any Chromium-based browser
+
+### ⚡ **Zero Build Process**
+Pure Vanilla JavaScript. Clone → Load → Done. No npm, no webpack, no headaches.
 
 ---
 
 ## 🚀 Quick Start
 
-### Installation (30 seconds)
+### Installation (30 seconds) - Works on Any Chromium Browser
 
-1. Open Chrome → `chrome://extensions/`
+#### For Chrome, Edge, Brave, Opera, Vivaldi, Arc, etc.
+
+1. Open your browser's extensions page:
+   - **Chrome/Edge/Brave**: `chrome://extensions/` or `edge://extensions/`
+   - **Opera**: `opera://extensions/`
+   - **Or**: Menu → Extensions → Manage Extensions
 2. Enable **"Developer mode"** (top-right toggle)
 3. Click **"Load unpacked"**
-4. Select the `highlightr` folder
+4. Select the OpenCopilot folder
 5. Done! ✨
 
 ### First Use
 
-1. Click the OpenCopilot icon in Chrome toolbar
-2. Configure your preferred AI service (Groq, Gemini, Ollama, or OpenRouter)
-3. Press **`Cmd+Shift+H`** (or `Ctrl+Shift+H`) on any webpage
+1. Click the OpenCopilot icon in your browser toolbar
+2. Choose your AI provider:
+   - **Fast & Cloud**: Groq, Gemini, OpenRouter
+   - **Private & Local**: Ollama (no data leaves your computer)
+3. Press **`Ctrl+Shift+O`** (or `⌘+Shift+O` on Mac) on any webpage
 4. Start chatting with AI about the page!
 
 ---
 
 ## ✨ Key Features
 
-### 🤖 Multi-AI Service Support
-- **Groq** - Fast inference (Mixtral, Llama)
-- **Gemini** - Google's powerful AI
-- **Ollama** - Local AI (privacy-focused)
-- **OpenRouter** - 100+ models (Claude, GPT-4, etc.)
+### 🤖 Multiple AI Providers - Your Choice, Your Way
+
+OpenCopilot gives you the freedom to choose based on your priorities:
+
+#### ☁️ **Cloud-Based (Fast & Powerful)**
+- **Groq** - ⚡ Blazing fast inference with Mixtral, Llama models
+- **Gemini** - 🌟 Google's state-of-the-art AI (Gemini Pro)
+- **OpenRouter** - 🌐 Access to 100+ models including Claude 3.5, GPT-4, and more
+
+#### 🔒 **Local & Private (100% Offline)**
+- **Ollama** - 🦙 **Run AI completely on your machine**
+  - 🔐 **Zero data sent to cloud** - Your conversations never leave your computer
+  - 🚀 **No API keys needed** - Completely free to use
+  - 🌍 **Works offline** - Internet connection not required
+  - 💻 **Popular models**: Llama 3.2, Mistral, CodeLlama, Phi-3, and more
+  - 📦 **Easy setup**: `ollama pull llama3.2` and you're ready!
+  
+**Perfect for**: Sensitive work, privacy advocates, developers, offline usage, or anyone who wants full control over their AI.
+
+### 📊 Built-in Usage Statistics
+- 🌐 Track sites you've used OpenCopilot on
+- ⁉️ Count questions asked across all sessions
+- Real-time updates in the header
 
 ### 🎨 Beautiful Dark UI
 - Slack-style chat interface
@@ -94,7 +146,9 @@ highlightr/
 ## 🎯 Usage
 
 ### Opening OpenCopilot
-Press **`Cmd+Shift+H`** (Mac) or **`Ctrl+Shift+H`** (Windows/Linux)
+Press **`Ctrl+Shift+O`** (Windows/Linux) or **`⌘+Shift+O`** (Mac)
+
+Works the same across Chrome, Edge, Brave, Opera, Vivaldi, and all Chromium browsers!
 
 ### Quick Actions
 Click any pill for instant analysis:
@@ -117,35 +171,92 @@ Click any pill for instant analysis:
 
 ## 🔧 Configuration
 
-### Groq (Recommended)
-1. Get API key from [console.groq.com](https://console.groq.com/keys)
-2. Model: `mixtral-8x7b-32768` (or any Groq model)
+### 🦙 Ollama - 100% Local & Private (Recommended for Privacy)
 
-### Gemini
+**Why Ollama?**
+- ✅ **Completely FREE** - No API costs ever
+- ✅ **100% Private** - Data never leaves your machine
+- ✅ **No Internet Required** - Works completely offline
+- ✅ **No API Keys** - Zero setup complexity
+
+**Setup in 3 minutes:**
+
+```bash
+# 1. Install Ollama (Mac/Linux/Windows)
+# Download from: https://ollama.ai
+
+# 2. Pull a model (choose one)
+ollama pull llama3.2          # General purpose (3GB)
+ollama pull mistral           # Fast & efficient (4GB)
+ollama pull codellama         # Code-focused (7GB)
+ollama pull phi3              # Lightweight (2GB)
+
+# 3. Start Ollama (it runs in the background)
+ollama serve
+```
+
+**In OpenCopilot:**
+1. Select "Ollama" as your AI service
+2. URL: `http://localhost:11434` (default)
+3. Select your model from the dropdown (auto-detected!)
+4. Done! All processing happens on your machine 🔒
+
+---
+
+### ☁️ Cloud Providers (Fast, API Required)
+
+#### Groq (Fastest)
+1. Get free API key from [console.groq.com](https://console.groq.com/keys)
+2. Model: `mixtral-8x7b-32768` or other Groq models
+3. ⚡ Known for extremely fast inference speeds
+
+#### Google Gemini
 1. Get API key from [makersuite.google.com](https://makersuite.google.com/app/apikey)
-2. Model: `gemini-pro` (or `gemini-pro-vision`)
+2. Model: `gemini-pro` or `gemini-pro-vision`
+3. ✨ Google's latest AI technology
 
-### Ollama (Local, No API Key)
-1. Install from [ollama.ai](https://ollama.ai)
-2. Run: `ollama pull llama2`
-3. Keep running: `ollama serve`
-
-### OpenRouter
+#### OpenRouter (Most Flexible)
 1. Get API key from [openrouter.ai](https://openrouter.ai/keys)
-2. Choose any model (Claude, GPT-4, Gemini, etc.)
+2. Choose from 100+ models:
+   - `anthropic/claude-3.5-sonnet` - Best reasoning
+   - `openai/gpt-4-turbo` - Most capable
+   - `google/gemini-pro` - Fast & smart
+   - And many more!
+3. 🌐 One API for all major AI models
 
 ---
 
 ## 🌟 Why OpenCopilot?
 
-✅ **No build process** - Just load and go  
-✅ **Privacy-focused** - Your choice of AI service  
-✅ **Beautiful UI** - Professional dark theme  
-✅ **Conversation history** - Never lose context  
-✅ **Mindmap support** - Visual thinking  
-✅ **Multi-view** - Sidebar or modal  
-✅ **Markdown rendering** - Formatted responses  
-✅ **Local fonts & libs** - CSP compliant, works offline  
+### 🔐 Privacy & Control
+✅ **100% Local Option** - Use Ollama for complete privacy  
+✅ **Multi-Provider** - Choose cloud or local based on your needs  
+✅ **Your Data, Your Choice** - No forced cloud services  
+
+### 🌐 Universal Compatibility
+✅ **All Chromium Browsers** - Chrome, Edge, Brave, Opera, Vivaldi, Arc  
+✅ **Cross-Platform** - Windows, macOS, Linux  
+✅ **No Browser-Specific Code** - Pure web standards  
+
+### ⚡ Developer Friendly
+✅ **No Build Process** - Just load and go  
+✅ **Pure Vanilla JavaScript** - No frameworks, no dependencies  
+✅ **CSP Compliant** - Works with strict security policies  
+✅ **Open Source** - Inspect, modify, learn  
+
+### 🎨 Beautiful & Functional
+✅ **Professional Dark UI** - Easy on the eyes  
+✅ **Dual View Modes** - Sidebar or fullscreen modal  
+✅ **Markdown & Mermaid** - Rich formatted responses with diagrams  
+✅ **Conversation History** - Per-URL persistence  
+✅ **Usage Statistics** - Track your AI interactions  
+✅ **Auto-Detect Models** - Ollama models load automatically  
+
+### 🚀 Smart Features
+✅ **Context-Aware** - Automatically analyzes page content  
+✅ **Quick Actions** - One-click summaries, bullet points, mindmaps  
+✅ **Keyboard Shortcuts** - `Ctrl+Shift+O` to activate anywhere  
+✅ **Inline Settings** - Configure without leaving the page  
 
 ---
 
@@ -184,7 +295,55 @@ MIT License - Free for personal and commercial use
 
 ---
 
-**Made with ❤️ - Pure Vanilla JavaScript**
+## 🎯 Use Cases
 
-Press `Cmd+Shift+H` and experience AI-powered web browsing! 🚀
+### 🔒 **Privacy-Conscious Users**
+Run Ollama locally and keep all your conversations on your machine. Perfect for:
+- Analyzing confidential documents
+- Working with proprietary information
+- General privacy concerns
+- Offline environments
+
+### 💼 **Professionals & Students**
+- Research papers and articles
+- Technical documentation
+- Learning new concepts
+- Quick summaries of long content
+
+### 👨‍💻 **Developers**
+- Understanding code documentation
+- Analyzing GitHub repos
+- Learning new frameworks
+- Stack Overflow deep dives
+
+### 🌍 **Multi-Browser Users**
+Switch between Chrome, Edge, Brave, or any Chromium browser - OpenCopilot works everywhere!
+
+---
+
+## 🤝 Contributing
+
+OpenCopilot is open source and built with pure vanilla JavaScript. Contributions welcome!
+
+- 🐛 Found a bug? Open an issue
+- 💡 Have an idea? Start a discussion  
+- 🔧 Want to contribute? Submit a PR
+
+---
+
+**Made with ❤️ using Pure Vanilla JavaScript**
+
+*No frameworks. No build tools. No complexity.*
+
+Press `Ctrl+Shift+O` and experience AI-powered web browsing with complete privacy control! 🚀
+
+---
+
+<div align="center">
+
+**Your Web. Your AI. Your Privacy.**
+
+*Works on Chrome • Edge • Brave • Opera • Vivaldi • Arc • All Chromium Browsers*
+
+</div>
 

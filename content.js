@@ -52,7 +52,7 @@ function createSidebar() {
     height: '100vh',
     border: 'none',
     zIndex: '999999',
-    boxShadow: '-4px 0 20px rgba(0, 0, 0, 0.15)',
+    boxShadow: '-8px 0 32px rgba(0, 0, 0, 0.3), -2px 0 8px rgba(0, 0, 0, 0.2)',
     transition: 'right 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     background: 'white'
   });
