@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenCopilot - Modal</title>
+  <link rel="stylesheet" href="sidebar.css">
+  <link rel="stylesheet" href="modal.css">
+</head>
+<body>
+  <div class="modal-container">
+    <!-- Settings Confirmation -->
+    <div class="settings-confirmation" id="settingsConfirmation"></div>
+    
+    <!-- Inline Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+      <div class="settings-header">
+        <h3>⚙️ Settings</h3>
+        <button class="settings-close" id="settingsPanelClose">×</button>
+      </div>
+      
+      <div class="settings-group">
+        <label class="settings-label">AI Service</label>
+        <select class="settings-select" id="serviceSelect">
+          <option value="groq">🚀 Groq</option>
+          <option value="gemini">✨ Gemini</option>
+          <option value="ollama">🦙 Ollama</option>
+          <option value="openrouter">🌐 OpenRouter</option>
+        </select>
+      </div>
+      
+      <div class="settings-divider"></div>
+      
+      <!-- Groq Settings -->
+      <div id="groqSettings" class="service-settings">
+        <div class="settings-group">
+          <label class="settings-label">Groq API Key</label>
+          <input type="password" class="settings-input" id="groqApiKeyInput" placeholder="Enter API key">
+          <div class="settings-help">Get your key from console.groq.com</div>
+        </div>
+        <div class="settings-group">
+          <label class="settings-label">Model</label>
+          <input type="text" class="settings-input" id="groqModelInput" placeholder="mixtral-8x7b-32768">
+        </div>
+      </div>
+      
+      <!-- Gemini Settings -->
+      <div id="geminiSettings" class="service-settings" style="display: none;">
+        <div class="settings-group">
+          <label class="settings-label">Gemini API Key</label>
+          <input type="password" class="settings-input" id="geminiApiKeyInput" placeholder="Enter API key">
+          <div class="settings-help">Get your key from makersuite.google.com</div>
+        </div>
+        <div class="settings-group">
+          <label class="settings-label">Model</label>
+          <input type="text" class="settings-input" id="geminiModelInput" placeholder="gemini-pro">
+        </div>
+      </div>
+      
+      <!-- Ollama Settings -->
+      <div id="ollamaSettings" class="service-settings" style="display: none;">
+        <div class="settings-group">
+          <label class="settings-label">Ollama URL</label>
+          <input type="text" class="settings-input" id="ollamaUrlInput" placeholder="http://localhost:11434">
+        </div>
+        <div class="settings-group">
+          <label class="settings-label">Model</label>
+          <input type="text" class="settings-input" id="ollamaModelInput" placeholder="llama2">
+        </div>
+      </div>
+      
+      <!-- OpenRouter Settings -->
+      <div id="openrouterSettings" class="service-settings" style="display: none;">
+        <div class="settings-group">
+          <label class="settings-label">OpenRouter API Key</label>
+          <input type="password" class="settings-input" id="openRouterApiKeyInput" placeholder="Enter API key">
+          <div class="settings-help">Get your key from openrouter.ai</div>
+        </div>
+        <div class="settings-group">
+          <label class="settings-label">Model</label>
+          <input type="text" class="settings-input" id="openRouterModelInput" placeholder="anthropic/claude-3.5-sonnet">
+        </div>
+      </div>
+      
+      <div class="settings-divider"></div>
+      
+      <button class="settings-button" id="saveSettingsBtn">Save Settings</button>
+    </div>
+    
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="header-content">
+        <div class="header-title">
+          <span class="header-icon">⚡</span>
+          <h1>OpenCopilot</h1>
+        </div>
+        <div class="header-actions">
+          <button class="icon-button" id="settingsBtn" title="Settings">⚙️</button>
+          <button class="icon-button" id="closeBtn" title="Close Modal">✕</button>
+        </div>
+      </div>
+      
+      <div class="page-info" id="pageInfo" style="display: none;">
+        <div class="page-title" id="pageTitle"></div>
+        <div class="service-badge" id="serviceBadge"></div>
+      </div>
+    </div>
+    
+    <!-- Messages Area -->
+    <div class="messages-container" id="messagesContainer">
+      <div class="messages-list" id="messagesList"></div>
+    </div>
+    
+    <!-- Quick Prompts -->
+    <div class="quick-prompts" id="quickPrompts">
+      <button class="quick-prompt-button" data-prompt="summarize">
+        <span>✨</span>
+        <span>Summarize</span>
+      </button>
+      <button class="quick-prompt-button" data-prompt="bullets">
+        <span>📋</span>
+        <span>Bullet Points</span>
+      </button>
+      <button class="quick-prompt-button" data-prompt="terms">
+        <span>📚</span>
+        <span>New Terms</span>
+      </button>
+      <button class="quick-prompt-button" data-prompt="mindmap">
+        <span>🧠</span>
+        <span>Mindmap</span>
+      </button>
+    </div>
+    
+    <!-- Error Banner -->
+    <div class="error-banner" id="errorBanner" style="display: none;">
+      <span id="errorMessage"></span>
+      <button id="closeError">×</button>
+    </div>
+    
+    <!-- Input Area -->
+    <div class="input-container">
+      <div class="input-wrapper">
+        <textarea 
+          class="message-input" 
+          id="messageInput" 
+          placeholder="Ask me anything about this page..."
+          rows="1"
+        ></textarea>
+        <button class="send-button" id="sendBtn">
+          <span>➤</span>
+        </button>
+      </div>
+      <div class="input-hint">
+        Press Enter to send, Shift+Enter for new line
+      </div>
+    </div>
+  </div>
+  
+  <script src="htmlToMarkdown.js"></script>
+  <script src="assets/libs/marked.min.js"></script>
+  <script src="assets/libs/mermaid.min.js"></script>
+  <script src="aiService.js"></script>
+  <script src="sidebar.js"></script>
+</body>
+</html>
+

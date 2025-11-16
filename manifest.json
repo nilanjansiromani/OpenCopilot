@@ -1,0 +1,53 @@
+{
+  "manifest_version": 3,
+  "name": "OpenCopilot - AI Assistant",
+  "version": "1.1.0",
+  "description": "AI-powered co-pilot for web pages with multi-service support",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "settings.html",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    }
+  },
+  "commands": {
+    "toggle-sidebar": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+H",
+        "mac": "Command+Shift+H"
+      },
+      "description": "Toggle AI Co-Pilot sidebar"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["sidebar.html", "sidebar.js", "sidebar.css", "modal.html", "modal.css", "assets/libs/marked.min.js", "assets/libs/mermaid.min.js", "htmlToMarkdown.js", "aiService.js", "assets/fonts/lato.css", "assets/fonts/lato-regular.woff2", "assets/fonts/lato-bold.woff2", "assets/fonts/lato-light.woff2", "assets/fonts/lato-black.woff2"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  }
+}
+

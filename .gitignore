@@ -1,0 +1,17 @@
+# OS Files
+.DS_Store
+*.log
+
+# Environment
+.env
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temp files
+*.tmp
+*.bak
