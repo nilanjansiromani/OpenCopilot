@@ -17,6 +17,21 @@
 
 ## 🌟 What Makes OpenCopilot Different?
 
+
+Use it as a "Sidebar" to ask any question about the web page.
+
+<img width="600" alt="image" src="https://gecgithub01.walmart.com/n0s00jx/OpenCopilot/assets/20577/8cfce445-953e-458f-9482-74970e135eb4">
+
+Or a full screen modal to have a focussed chat session.
+
+<img width="600" alt="image" src="https://gecgithub01.walmart.com/n0s00jx/OpenCopilot/assets/20577/49f31172-e7cd-45c1-8b86-76d9a56f00ed">
+
+Generate Mermaid Mindmaps, visualise key information from the page
+
+<img width="600" alt="image" src="https://gecgithub01.walmart.com/n0s00jx/OpenCopilot/assets/20577/4ee19690-8f17-4a30-a201-3ee6f60f7b7f">
+
+
+
 ### 🔒 **Your Data, Your Rules**
 - **100% Local Mode Available** - Use Ollama and your data never leaves your machine
 - **Choose Your Provider** - Switch between cloud (fast) or local (private) AI

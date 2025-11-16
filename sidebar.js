@@ -14,6 +14,7 @@ let usageStats = {
 };
 
 const quickPromptTemplates = {
+  tldr: 'Please provide a TLDR summary of this page in exactly 5 bullet points. Each bullet point must contain exactly 5 words. Be concise and capture the key essence.',
   summarize: 'Please provide a concise summary of the main points and key information from this web page.',
   bullets: 'Please summarize this web page into clear, concise bullet points covering the main topics and important details.',
   terms: 'Please identify and explain the key terms, concepts, and technical vocabulary from this web page.',
@@ -193,11 +194,6 @@ function loadConversationHistory(url) {
       if (messages.length > 0 && messages[0].role === 'assistant') {
         welcomeMessageAdded = true;
       }
-      
-      // Hide quick prompts if there are user messages
-      if (messages.some(m => m.role === 'user')) {
-        quickPrompts.style.display = 'none';
-      }
     } else {
       // No history, add welcome message if not already added
       if (pageContent && !welcomeMessageAdded) {
@@ -233,7 +229,6 @@ function clearCurrentPageChat() {
       messages = [];
       messagesList.innerHTML = '';
       welcomeMessageAdded = false;
-      quickPrompts.style.display = 'flex';
       
       // Add welcome message again
       if (pageContent) {
@@ -272,7 +267,6 @@ function clearAllData() {
         messages = [];
         messagesList.innerHTML = '';
         welcomeMessageAdded = false;
-        quickPrompts.style.display = 'flex';
         
         // Add welcome message again
         if (pageContent) {
@@ -477,11 +471,6 @@ function addMessageWithoutSave(role, content, isError = false, timestamp = new D
       container.scrollTop = container.scrollHeight;
     }
   }, 200);
-  
-  // Hide quick prompts after first user message
-  if (role === 'user' && messages.filter(m => m.role === 'user').length === 1) {
-    quickPrompts.style.display = 'none';
-  }
 }
 
 // Show typing indicator
