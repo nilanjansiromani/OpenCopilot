@@ -18,7 +18,8 @@
 ## 🌟 What Makes OpenCopilot Different?
 
 
-Use it as a "Sidebar" to ask any question about the web page.
+Use it as a "Sidebar" to ask any question about the web page
+Or just ask anything in general.
 
 <img width="600" alt="image" src="https://gecgithub01.walmart.com/n0s00jx/OpenCopilot/assets/20577/8cfce445-953e-458f-9482-74970e135eb4">
 
