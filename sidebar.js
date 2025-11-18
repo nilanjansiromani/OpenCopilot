@@ -56,6 +56,7 @@ const saveSettingsBtn = document.getElementById('saveSettingsBtn');
 const serviceSelect = document.getElementById('serviceSelect');
 const settingsConfirmation = document.getElementById('settingsConfirmation');
 const modalToggleBtn = document.getElementById('modalToggleBtn');
+const contextToggle = document.getElementById('contextToggle');
 
 // Load settings
 function loadSettings() {
@@ -127,6 +128,44 @@ function trackQuestionAsked() {
 
 loadUsageStats();
 
+// Load context toggle state (default: true/ON)
+function loadContextToggleState() {
+  chrome.storage.local.get(['useWebPageContext'], (result) => {
+    const useContext = result.useWebPageContext !== false; // Default to true
+    if (contextToggle) {
+      contextToggle.checked = useContext;
+    }
+  });
+}
+
+// Save context toggle state
+function saveContextToggleState() {
+  if (contextToggle) {
+    chrome.storage.local.set({ useWebPageContext: contextToggle.checked });
+  }
+}
+
+// Load toggle state on initialization
+loadContextToggleState();
+
+// Listen for toggle changes
+if (contextToggle) {
+  contextToggle.addEventListener('change', saveContextToggleState);
+}
+
+// Get welcome message based on toggle state
+function getWelcomeMessage() {
+  const useContext = contextToggle ? contextToggle.checked : true; // Default to true if toggle doesn't exist
+  
+  if (useContext && pageContent) {
+    // Toggle is ON - show page analysis message
+    return `I've analyzed the page "${pageContent.title}". You can ask me anything about it, or use one of the quick prompts below!`;
+  } else {
+    // Toggle is OFF - show friendly greeting
+    return `Hello! I'm here to help. Feel free to ask me anything, or use one of the quick prompts below!`;
+  }
+}
+
 // Initialize Mermaid
 if (typeof mermaid !== 'undefined') {
   mermaid.initialize({ 
@@ -196,9 +235,9 @@ function loadConversationHistory(url) {
       }
     } else {
       // No history, add welcome message if not already added
-      if (pageContent && !welcomeMessageAdded) {
+      if (!welcomeMessageAdded) {
         welcomeMessageAdded = true;
-        addMessage('assistant', `I've analyzed the page "${pageContent.title}". You can ask me anything about it, or use one of the quick prompts below!`);
+        addMessage('assistant', getWelcomeMessage());
       }
     }
   });
@@ -231,10 +270,8 @@ function clearCurrentPageChat() {
       welcomeMessageAdded = false;
       
       // Add welcome message again
-      if (pageContent) {
-        welcomeMessageAdded = true;
-        addMessage('assistant', `I've analyzed the page "${pageContent.title}". You can ask me anything about it, or use one of the quick prompts below!`);
-      }
+      welcomeMessageAdded = true;
+      addMessage('assistant', getWelcomeMessage());
       
       // Show confirmation
       showSettingsConfirmation('Chat history cleared for this page! 🗑️');
@@ -269,10 +306,8 @@ function clearAllData() {
         welcomeMessageAdded = false;
         
         // Add welcome message again
-        if (pageContent) {
-          welcomeMessageAdded = true;
-          addMessage('assistant', `I've analyzed the page "${pageContent.title}". You can ask me anything about it, or use one of the quick prompts below!`);
-        }
+        welcomeMessageAdded = true;
+        addMessage('assistant', getWelcomeMessage());
         
         // Show confirmation
         showSettingsConfirmation('All conversations and stats cleared! 🗑️🌐');
@@ -569,11 +604,19 @@ async function sendMessage(messageText = null) {
   showTypingIndicator();
   
   try {
-      // Prepare context
-    const systemPrompt = `You are a helpful AI assistant analyzing a web page. Here is the page content in markdown format:
+    // Check toggle state - if OFF, do not include page context
+    const useContext = contextToggle ? contextToggle.checked : true; // Default to true if toggle doesn't exist
+    
+    // Prepare system prompt based on toggle state
+    let systemPrompt;
+    
+    if (useContext) {
+      // Toggle is ON - include web page context (current behavior)
+      if (pageContent && pageMarkdown) {
+        systemPrompt = `You are a helpful AI assistant analyzing a web page. Here is the page content in markdown format:
 
-Title: ${pageContent?.title || 'Unknown'}
-URL: ${pageContent?.url || 'Unknown'}
+Title: ${pageContent.title || 'Unknown'}
+URL: ${pageContent.url || 'Unknown'}
 
 Page Content:
 ${pageMarkdown}
@@ -581,6 +624,18 @@ ${pageMarkdown}
 IMPORTANT: When creating tables, limit them to a maximum of 2 columns. If you need to present more data, use multiple tables or a different format.
 
 Please answer the user's questions based on this content. Be concise and helpful.`;
+      } else {
+        // Page content not available, but toggle is on - use simple prompt
+        systemPrompt = `You are a helpful AI assistant. Please answer the user's questions directly and concisely.
+
+IMPORTANT: When creating tables, limit them to a maximum of 2 columns. If you need to present more data, use multiple tables or a different format.`;
+      }
+    } else {
+      // Toggle is OFF - do NOT include page context, just answer the question
+      systemPrompt = `You are a helpful AI assistant. Please answer the user's questions directly and concisely. Do not hallucinate or make up information.
+      Seek clarification if needed. Always give me a level 3 answer and not a level 1 or level 0 shallow answer.
+IMPORTANT: When creating tables, limit them to a maximum of 2 columns. If you need to present more data, use multiple tables or a different format.`;
+    }
     
     // Get conversation messages
     const conversationMessages = messages
