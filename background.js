@@ -1,14 +1,60 @@
 // Background service worker for handling keyboard shortcuts and extension lifecycle
 
+// Log when the service worker starts
+console.log('OpenCopilot background service worker started');
+
+// Handle keyboard shortcuts
 chrome.commands.onCommand.addListener((command) => {
+  console.log('Command received:', command);
   if (command === 'toggle-sidebar') {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]) {
-        chrome.tabs.sendMessage(tabs[0].id, { action: 'toggleSidebar' });
-      }
-    });
+    // Show modal instead of sidebar
+    toggleModalOnActiveTab();
   }
 });
+
+// Also toggle sidebar when extension icon is clicked (alternative method for Arc browser)
+chrome.action.onClicked.addListener((tab) => {
+  console.log('Extension icon clicked, toggling sidebar');
+  toggleSidebarOnActiveTab();
+});
+
+// Helper function to toggle sidebar on active tab
+function toggleSidebarOnActiveTab() {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (tabs[0]) {
+      console.log('Sending toggleSidebar message to tab:', tabs[0].id);
+      chrome.tabs.sendMessage(tabs[0].id, { action: 'toggleSidebar' }, (response) => {
+        const lastError = chrome.runtime.lastError;
+        if (lastError) {
+          console.error('Error sending message:', lastError.message);
+        } else if (response) {
+          console.log('Toggle response:', response);
+        }
+      });
+    } else {
+      console.error('No active tab found');
+    }
+  });
+}
+
+// Helper function to toggle modal on active tab
+function toggleModalOnActiveTab() {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (tabs[0]) {
+      console.log('Sending toggleModal message to tab:', tabs[0].id);
+      chrome.tabs.sendMessage(tabs[0].id, { action: 'toggleModal' }, (response) => {
+        const lastError = chrome.runtime.lastError;
+        if (lastError) {
+          console.error('Error sending message:', lastError.message);
+        } else if (response) {
+          console.log('Toggle response:', response);
+        }
+      });
+    } else {
+      console.error('No active tab found');
+    }
+  });
+}
 
 // Handle installation
 chrome.runtime.onInstalled.addListener((details) => {
