@@ -34,12 +34,12 @@
     }
   },
   "commands": {
-    "toggle-sidebar": {
+    "open-settings": {
       "suggested_key": {
         "default": "Ctrl+Shift+O",
         "mac": "Command+Shift+O"
       },
-      "description": "Toggle AI Co-Pilot sidebar"
+      "description": "Open OpenCopilot Settings"
     }
   },
   "web_accessible_resources": [

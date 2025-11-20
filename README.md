@@ -74,7 +74,7 @@ Pure Vanilla JavaScript. Clone → Load → Done. No npm, no webpack, no headach
 2. Choose your AI provider:
    - **Fast & Cloud**: Groq, Gemini, OpenRouter
    - **Private & Local**: Ollama (no data leaves your computer)
-3. Press **`Ctrl+Shift+O`** (or `⌘+Shift+O` on Mac) on any webpage
+3. Click the extension icon in your browser toolbar to activate on any webpage
 4. Start chatting with AI about the page!
 
 ---
@@ -162,7 +162,7 @@ highlightr/
 ## 🎯 Usage
 
 ### Opening OpenCopilot
-Press **`Ctrl+Shift+O`** (Windows/Linux) or **`⌘+Shift+O`** (Mac)
+**Click the extension icon** in your browser toolbar or press **`Ctrl+Shift+O`** (or `⌘+Shift+O` on Mac) to open settings
 
 Works the same across Chrome, Edge, Brave, Opera, Vivaldi, and all Chromium browsers!
 
@@ -271,7 +271,7 @@ ollama serve
 ### 🚀 Smart Features
 ✅ **Context-Aware** - Automatically analyzes page content  
 ✅ **Quick Actions** - One-click summaries, bullet points, mindmaps  
-✅ **Keyboard Shortcuts** - `Ctrl+Shift+O` to activate anywhere  
+✅ **Keyboard Shortcuts** - `Ctrl+Shift+O` to open settings (customizable in `chrome://extensions/shortcuts`)  
 ✅ **Inline Settings** - Configure without leaving the page  
 
 ---
@@ -351,7 +351,7 @@ OpenCopilot is open source and built with pure vanilla JavaScript. Contributions
 
 *No frameworks. No build tools. No complexity.*
 
-Press `Ctrl+Shift+O` and experience AI-powered web browsing with complete privacy control! 🚀
+Click the extension icon or press `Ctrl+Shift+O` to access settings and experience AI-powered web browsing with complete privacy control! 🚀
 
 ---
 

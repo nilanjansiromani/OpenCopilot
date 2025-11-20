@@ -13,13 +13,31 @@ let usageStats = {
   questionsAsked: 0
 };
 
-const quickPromptTemplates = {
-  tldr: 'Please provide a TLDR summary of this page in exactly 5 bullet points. Each bullet point must contain exactly 5 words. Be concise and capture the key essence.',
-  summarize: 'Please provide a concise summary of the main points and key information from this web page.',
-  bullets: 'Please summarize this web page into clear, concise bullet points covering the main topics and important details.',
-  terms: 'Please identify and explain the key terms, concepts, and technical vocabulary from this web page.',
-  mindmap: 'Please create a mindmap of this web page content in Mermaid.js format. Use the mindmap syntax with a root node and organize the key topics, subtopics, and concepts hierarchically. Format it as a Mermaid code block.'
+// Default pills (fallback if no custom pills are saved)
+const DEFAULT_PILLS = {
+  tldr: {
+    label: 'TLDR',
+    prompt: 'Please provide a TLDR summary of this page in exactly 5 bullet points. Each bullet point must contain exactly 5 words. Be concise and capture the key essence.'
+  },
+  summarize: {
+    label: 'Summarize',
+    prompt: 'Please provide a concise summary of the main points and key information from this web page.'
+  },
+  bullets: {
+    label: 'Bullets',
+    prompt: 'Please summarize this web page into clear, concise bullet points covering the main topics and important details.'
+  },
+  terms: {
+    label: 'Terms',
+    prompt: 'Please identify and explain the key terms, concepts, and technical vocabulary from this web page.'
+  },
+  mindmap: {
+    label: 'Mindmap',
+    prompt: 'Please create a mindmap of this web page content in Mermaid.js format. Use the mindmap syntax with a root node and organize the key topics, subtopics, and concepts hierarchically. Format it as a Mermaid code block.'
+  }
 };
+
+let quickPromptTemplates = {};
 
 const serviceIcons = {
   groq: '🚀',
@@ -71,6 +89,96 @@ function loadSettings() {
 }
 
 loadSettings();
+
+// Load custom pills from storage
+function loadCustomPills() {
+  chrome.storage.sync.get(['customPills'], (result) => {
+    if (result.customPills && Object.keys(result.customPills).length > 0) {
+      // Use custom pills
+      const customPills = result.customPills;
+      quickPromptTemplates = {};
+      
+      // Convert to old format for compatibility
+      Object.entries(customPills).forEach(([key, data]) => {
+        quickPromptTemplates[key] = data.prompt;
+      });
+      
+      console.log('Loaded custom pills:', Object.keys(quickPromptTemplates));
+      renderQuickPrompts(customPills);
+    } else {
+      // Use default pills
+      Object.entries(DEFAULT_PILLS).forEach(([key, data]) => {
+        quickPromptTemplates[key] = data.prompt;
+      });
+      
+      console.log('Using default pills');
+      renderQuickPrompts(DEFAULT_PILLS);
+    }
+  });
+}
+
+// Render quick prompt buttons dynamically
+function renderQuickPrompts(pills) {
+  const quickPromptsContainer = document.getElementById('quickPrompts');
+  if (!quickPromptsContainer) return;
+  
+  // Default icons for common pills
+  const defaultIcons = {
+    tldr: '⚡',
+    summarize: '✨',
+    bullets: '📋',
+    terms: '📚',
+    mindmap: '🧠',
+    explain: '💡',
+    translate: '🌍',
+    code: '💻',
+    analyze: '🔍',
+    compare: '⚖️'
+  };
+  
+  // Clear existing buttons
+  quickPromptsContainer.innerHTML = '';
+  
+  // Create buttons for each pill
+  Object.entries(pills).forEach(([key, data]) => {
+    const button = document.createElement('button');
+    button.className = 'quick-prompt-button';
+    button.setAttribute('data-prompt', key);
+    
+    // Add icon
+    const iconSpan = document.createElement('span');
+    iconSpan.textContent = defaultIcons[key] || '💊';
+    
+    // Add label
+    const labelSpan = document.createElement('span');
+    labelSpan.textContent = data.label;
+    
+    button.appendChild(iconSpan);
+    button.appendChild(labelSpan);
+    quickPromptsContainer.appendChild(button);
+  });
+  
+  // Add event listeners to new buttons
+  document.querySelectorAll('.quick-prompt-button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const promptType = btn.getAttribute('data-prompt');
+      const promptText = quickPromptTemplates[promptType];
+      if (promptText) {
+        sendMessage(promptText);
+      }
+    });
+  });
+}
+
+// Listen for pills updates from settings page
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'pillsUpdated') {
+    console.log('Pills updated, reloading...');
+    loadCustomPills();
+  }
+});
+
+loadCustomPills();
 
 // Load usage stats
 function loadUsageStats() {
@@ -878,16 +986,7 @@ saveSettingsBtn.addEventListener('click', () => {
 
 closeError.addEventListener('click', hideError);
 
-// Quick prompts
-document.querySelectorAll('.quick-prompt-button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const promptType = btn.getAttribute('data-prompt');
-    const promptText = quickPromptTemplates[promptType];
-    if (promptText) {
-      sendMessage(promptText);
-    }
-  });
-});
+// Quick prompts are now loaded dynamically in loadCustomPills()
 
 // Auto-focus input
 messageInput.focus();

@@ -6,9 +6,9 @@ console.log('OpenCopilot background service worker started');
 // Handle keyboard shortcuts
 chrome.commands.onCommand.addListener((command) => {
   console.log('Command received:', command);
-  if (command === 'toggle-sidebar') {
-    // Show modal instead of sidebar
-    toggleModalOnActiveTab();
+  if (command === 'open-settings') {
+    // Open settings dashboard
+    chrome.runtime.openOptionsPage();
   }
 });
 

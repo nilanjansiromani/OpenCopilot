@@ -1,7 +1,32 @@
-// Settings page functionality
+// Settings Dashboard - Enhanced with Pill Management
 
+// Default pills
+const DEFAULT_PILLS = {
+  tldr: {
+    label: 'TLDR',
+    prompt: 'Please provide a TLDR summary of this page in exactly 5 bullet points. Each bullet point must contain exactly 5 words. Be concise and capture the key essence.'
+  },
+  summarize: {
+    label: 'Summarize',
+    prompt: 'Please provide a concise summary of the main points and key information from this web page.'
+  },
+  bullets: {
+    label: 'Bullets',
+    prompt: 'Please summarize this web page into clear, concise bullet points covering the main topics and important details.'
+  },
+  terms: {
+    label: 'Terms',
+    prompt: 'Please identify and explain the key terms, concepts, and technical vocabulary from this web page.'
+  },
+  mindmap: {
+    label: 'Mindmap',
+    prompt: 'Please create a mindmap of this web page content in Mermaid.js format. Use the mindmap syntax with a root node and organize the key topics, subtopics, and concepts hierarchically. Format it as a Mermaid code block.'
+  }
+};
+
+// DOM Elements
 const serviceRadios = document.querySelectorAll('input[name="service"]');
-const serviceCards = document.querySelectorAll('.service-card');
+const serviceCards = document.querySelectorAll('.service-card-dashboard');
 const sections = {
   groq: document.getElementById('groqSection'),
   gemini: document.getElementById('geminiSection'),
@@ -13,6 +38,23 @@ const resetBtn = document.getElementById('resetBtn');
 const statusMessage = document.getElementById('statusMessage');
 const refreshOllamaModelsBtn = document.getElementById('refreshOllamaModels');
 const ollamaModelSelect = document.getElementById('ollamaModel');
+
+// Pills Management
+const addPillBtn = document.getElementById('addPillBtn');
+const resetPillsBtn = document.getElementById('resetPillsBtn');
+const pillsList = document.getElementById('pillsList');
+const pillModal = document.getElementById('pillModal');
+const modalTitle = document.getElementById('modalTitle');
+const closeModal = document.getElementById('closeModal');
+const cancelPillBtn = document.getElementById('cancelPillBtn');
+const savePillBtn = document.getElementById('savePillBtn');
+const pillKeyInput = document.getElementById('pillKey');
+const pillLabelInput = document.getElementById('pillLabel');
+const pillPromptInput = document.getElementById('pillPrompt');
+
+let currentPills = {};
+let editingPillKey = null;
+let isNewPill = false;
 
 // Show/hide sections based on selected service
 function updateSections() {
@@ -82,17 +124,18 @@ async function fetchOllamaModels() {
       }
       
       helpText.textContent = `Found ${data.models.length} model(s) in your local Ollama instance`;
-      helpText.className = 'form-text text-success';
+      helpText.className = 'form-help';
+      helpText.style.color = '#10b981';
     } else {
       ollamaModelSelect.innerHTML = '<option value="">No models found</option>';
       helpText.textContent = 'No models found. Please pull a model using "ollama pull <model-name>"';
-      helpText.className = 'form-text text-warning';
+      helpText.style.color = '#f59e0b';
     }
   } catch (error) {
     console.error('Error fetching Ollama models:', error);
     ollamaModelSelect.innerHTML = '<option value="">Error loading models</option>';
     helpText.textContent = `Error: ${error.message}. Make sure Ollama is running at ${ollamaUrl}`;
-    helpText.className = 'form-text text-danger';
+    helpText.style.color = '#ef4444';
   } finally {
     ollamaModelSelect.disabled = false;
     refreshOllamaModelsBtn.disabled = false;
@@ -187,7 +230,7 @@ function saveSettings() {
   }
   
   chrome.storage.sync.set({ settings }, () => {
-    showStatus('Settings saved successfully!', 'success');
+    showStatus('Connection settings saved successfully! 🎉', 'success');
   });
 }
 
@@ -208,7 +251,7 @@ function resetSettings() {
     
     chrome.storage.sync.set({ settings: defaultSettings }, () => {
       loadSettings();
-      showStatus('Settings reset to defaults', 'success');
+      showStatus('Settings reset to defaults ✓', 'success');
     });
   }
 }
@@ -232,10 +275,182 @@ function showStatus(message, type) {
   
   setTimeout(() => {
     statusMessage.innerHTML = '';
-  }, 3000);
+  }, 4000);
 }
 
-// Event listeners
+// ==================== PILLS MANAGEMENT ====================
+
+// Load pills from storage
+function loadPills() {
+  chrome.storage.sync.get(['customPills'], (result) => {
+    if (result.customPills) {
+      currentPills = result.customPills;
+    } else {
+      // Use default pills if none saved
+      currentPills = { ...DEFAULT_PILLS };
+    }
+    renderPillsList();
+  });
+}
+
+// Save pills to storage
+function savePills() {
+  chrome.storage.sync.set({ customPills: currentPills }, () => {
+    console.log('Pills saved to storage');
+    // Notify the sidebar to reload pills
+    chrome.runtime.sendMessage({ action: 'pillsUpdated' });
+  });
+}
+
+// Render pills list
+function renderPillsList() {
+  pillsList.innerHTML = '';
+  
+  const pillsArray = Object.entries(currentPills);
+  
+  if (pillsArray.length === 0) {
+    pillsList.innerHTML = '<div class="pills-list-empty">💊 No pills configured yet.<br><br>Click <strong>"Add New Pill"</strong> to create your first custom quick prompt!</div>';
+    return;
+  }
+  
+  pillsArray.forEach(([key, data]) => {
+    const pillItem = document.createElement('div');
+    pillItem.className = 'pill-item';
+    
+    pillItem.innerHTML = `
+      <div class="pill-info">
+        <div class="pill-key">${key}</div>
+        <div class="pill-label">${data.label}</div>
+      </div>
+      <div class="pill-prompt">${data.prompt}</div>
+      <div class="pill-actions">
+        <button class="btn-edit-pill" data-key="${key}">Edit</button>
+        <button class="btn-delete-pill" data-key="${key}">Delete</button>
+      </div>
+    `;
+    
+    pillsList.appendChild(pillItem);
+  });
+  
+  // Add event listeners to edit and delete buttons
+  document.querySelectorAll('.btn-edit-pill').forEach(btn => {
+    btn.addEventListener('click', () => editPill(btn.dataset.key));
+  });
+  
+  document.querySelectorAll('.btn-delete-pill').forEach(btn => {
+    btn.addEventListener('click', () => deletePill(btn.dataset.key));
+  });
+}
+
+// Open modal for adding new pill
+function openAddPillModal() {
+  isNewPill = true;
+  editingPillKey = null;
+  
+  modalTitle.textContent = 'Add New Pill';
+  pillKeyInput.value = '';
+  pillKeyInput.disabled = false;
+  pillLabelInput.value = '';
+  pillPromptInput.value = '';
+  
+  pillModal.classList.add('show');
+}
+
+// Open modal for editing pill
+function editPill(key) {
+  isNewPill = false;
+  editingPillKey = key;
+  
+  const pill = currentPills[key];
+  
+  modalTitle.textContent = 'Edit Pill';
+  pillKeyInput.value = key;
+  pillKeyInput.disabled = true; // Don't allow changing key when editing
+  pillLabelInput.value = pill.label;
+  pillPromptInput.value = pill.prompt;
+  
+  pillModal.classList.add('show');
+}
+
+// Delete pill
+function deletePill(key) {
+  const pill = currentPills[key];
+  
+  if (confirm(`Are you sure you want to delete the "${pill.label}" pill?\n\nThis action cannot be undone.`)) {
+    delete currentPills[key];
+    savePills();
+    renderPillsList();
+    showStatus(`Pill "${pill.label}" deleted successfully 🗑️`, 'success');
+  }
+}
+
+// Close modal
+function closeModalWindow() {
+  pillModal.classList.remove('show');
+  editingPillKey = null;
+  isNewPill = false;
+}
+
+// Save pill (add or edit)
+function savePill() {
+  const key = pillKeyInput.value.trim().toLowerCase();
+  const label = pillLabelInput.value.trim();
+  const prompt = pillPromptInput.value.trim();
+  
+  // Validation
+  if (!key) {
+    alert('Please enter a pill ID');
+    return;
+  }
+  
+  if (!/^[a-z_]+$/.test(key)) {
+    alert('Pill ID must contain only lowercase letters and underscores');
+    return;
+  }
+  
+  if (!label) {
+    alert('Please enter a button label');
+    return;
+  }
+  
+  if (!prompt) {
+    alert('Please enter a prompt text');
+    return;
+  }
+  
+  // Check if key already exists (only for new pills)
+  if (isNewPill && currentPills[key]) {
+    alert(`A pill with the ID "${key}" already exists. Please use a different ID.`);
+    return;
+  }
+  
+  // Save pill
+  currentPills[key] = {
+    label: label,
+    prompt: prompt
+  };
+  
+  savePills();
+  renderPillsList();
+  closeModalWindow();
+  
+  const action = isNewPill ? 'added' : 'updated';
+  showStatus(`Pill "${label}" ${action} successfully! 💊`, 'success');
+}
+
+// Reset pills to defaults
+function resetPillsToDefaults() {
+  if (confirm('Reset all pills to default configuration?\n\nThis will delete all custom pills you have created.')) {
+    currentPills = { ...DEFAULT_PILLS };
+    savePills();
+    renderPillsList();
+    showStatus('Pills reset to defaults ✓', 'success');
+  }
+}
+
+// ==================== EVENT LISTENERS ====================
+
+// Service selection
 serviceRadios.forEach(radio => {
   radio.addEventListener('change', updateSections);
 });
@@ -248,11 +463,12 @@ serviceCards.forEach(card => {
   });
 });
 
+// Connection settings
 saveBtn.addEventListener('click', saveSettings);
 resetBtn.addEventListener('click', resetSettings);
 refreshOllamaModelsBtn.addEventListener('click', fetchOllamaModels);
 
-// Also fetch models when Ollama URL changes
+// Fetch models when Ollama URL changes
 document.getElementById('ollamaUrl').addEventListener('blur', () => {
   const selectedService = document.querySelector('input[name="service"]:checked').value;
   if (selectedService === 'ollama') {
@@ -260,6 +476,22 @@ document.getElementById('ollamaUrl').addEventListener('blur', () => {
   }
 });
 
-// Initialize
+// Pills management
+addPillBtn.addEventListener('click', openAddPillModal);
+resetPillsBtn.addEventListener('click', resetPillsToDefaults);
+closeModal.addEventListener('click', closeModalWindow);
+cancelPillBtn.addEventListener('click', closeModalWindow);
+savePillBtn.addEventListener('click', savePill);
+
+// Close modal when clicking outside
+pillModal.addEventListener('click', (e) => {
+  if (e.target === pillModal) {
+    closeModalWindow();
+  }
+});
+
+// ==================== INITIALIZATION ====================
+
 loadSettings();
 updateSections();
+loadPills();

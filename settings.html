@@ -3,153 +3,228 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenCopilot Settings</title>
+  <title>OpenCopilot Dashboard</title>
   <link rel="stylesheet" href="settings.css">
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <div class="card-header">
-        <h1>⚡ OpenCopilot Settings</h1>
-        <p class="mb-0">Configure your AI services and preferences</p>
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div>
+        <h1>⚡ OpenCopilot Dashboard</h1>
+        <p>Configure your AI services and customize quick prompts</p>
       </div>
-      
-      <div class="card-body p-4">
-        <div id="statusMessage"></div>
-        
-        <div class="alert alert-info mb-4">
-          <strong>Keyboard Shortcut:</strong> Press 
-          <span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">O</span> 
-          (or <span class="kbd">⌘</span> + <span class="kbd">Shift</span> + <span class="kbd">O</span> on Mac) 
-          on any web page to open the AI co-pilot sidebar.
+      <div class="header-actions">
+        <div class="kbd-hint">
+          <span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">O</span>
+          <span style="margin: 0 8px; opacity: 0.5;">or</span>
+          <span class="kbd">⌘</span> + <span class="kbd">Shift</span> + <span class="kbd">O</span>
         </div>
-        
-        <h5 class="mb-3">Select AI Service</h5>
-        <div class="service-selector">
-          <label class="service-card" for="groq">
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-container">
+    <!-- Status Messages -->
+    <div id="statusMessage"></div>
+
+    <!-- Connection Panel -->
+    <section class="dashboard-section">
+      <div class="section-title">
+        <h2>🔌 Connection</h2>
+        <p>Select and configure your AI service provider</p>
+      </div>
+
+      <div class="connection-grid">
+        <div class="service-selector-dashboard">
+          <label class="service-card-dashboard" for="groq">
             <input type="radio" id="groq" name="service" value="groq" checked>
-            <div class="service-icon">🚀</div>
-            <div>Groq</div>
+            <div class="service-content">
+              <div class="service-icon-large">🚀</div>
+              <div class="service-name">Groq</div>
+            </div>
           </label>
           
-          <label class="service-card" for="gemini">
+          <label class="service-card-dashboard" for="gemini">
             <input type="radio" id="gemini" name="service" value="gemini">
-            <div class="service-icon">✨</div>
-            <div>Gemini</div>
+            <div class="service-content">
+              <div class="service-icon-large">✨</div>
+              <div class="service-name">Gemini</div>
+            </div>
           </label>
           
-          <label class="service-card" for="ollama">
+          <label class="service-card-dashboard" for="ollama">
             <input type="radio" id="ollama" name="service" value="ollama">
-            <div class="service-icon">🦙</div>
-            <div>Ollama</div>
+            <div class="service-content">
+              <div class="service-icon-large">🦙</div>
+              <div class="service-name">Ollama</div>
+            </div>
           </label>
           
-          <label class="service-card" for="openrouter">
+          <label class="service-card-dashboard" for="openrouter">
             <input type="radio" id="openrouter" name="service" value="openrouter">
-            <div class="service-icon">🌐</div>
-            <div>OpenRouter</div>
+            <div class="service-content">
+              <div class="service-icon-large">🌐</div>
+              <div class="service-name">OpenRouter</div>
+            </div>
           </label>
         </div>
-        
-        <hr class="my-4">
-        
-        <!-- Groq Section -->
-        <div id="groqSection" class="section-config active">
-          <h5 class="mb-3">Groq Configuration</h5>
-          
-          <div class="mb-3">
-            <label for="groqApiKey" class="form-label">API Key</label>
-            <input type="password" class="form-control" id="groqApiKey" placeholder="Enter your Groq API key">
-            <div class="form-text">
-              Get your API key from <a href="https://console.groq.com/keys" target="_blank">Groq Console</a>
+
+        <!-- Configuration Forms -->
+        <div class="config-panel">
+          <!-- Groq Section -->
+          <div id="groqSection" class="section-config active">
+            <h3 class="config-title">Groq Configuration</h3>
+            
+            <div class="form-group">
+              <label for="groqApiKey" class="form-label">API Key</label>
+              <input type="password" class="form-control-dashboard" id="groqApiKey" placeholder="Enter your Groq API key">
+              <div class="form-help">
+                Get your API key from <a href="https://console.groq.com/keys" target="_blank">Groq Console</a>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="groqModel" class="form-label">Model Name</label>
+              <input type="text" class="form-control-dashboard" id="groqModel" placeholder="e.g., mixtral-8x7b-32768">
+              <div class="form-help">
+                Popular models: mixtral-8x7b-32768, llama2-70b-4096, gemma-7b-it
+              </div>
             </div>
           </div>
           
-          <div class="mb-3">
-            <label for="groqModel" class="form-label">Model Name</label>
-            <input type="text" class="form-control" id="groqModel" placeholder="e.g., mixtral-8x7b-32768">
-            <div class="form-text">
-              Popular models: mixtral-8x7b-32768, llama2-70b-4096, gemma-7b-it
+          <!-- Gemini Section -->
+          <div id="geminiSection" class="section-config">
+            <h3 class="config-title">Google Gemini Configuration</h3>
+            
+            <div class="form-group">
+              <label for="geminiApiKey" class="form-label">API Key</label>
+              <input type="password" class="form-control-dashboard" id="geminiApiKey" placeholder="Enter your Gemini API key">
+              <div class="form-help">
+                Get your API key from <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a>
+              </div>
             </div>
+            
+            <div class="form-group">
+              <label for="geminiModel" class="form-label">Model Name</label>
+              <input type="text" class="form-control-dashboard" id="geminiModel" placeholder="e.g., gemini-pro">
+              <div class="form-help">
+                Available models: gemini-pro, gemini-pro-vision
+              </div>
+            </div>
+          </div>
+          
+          <!-- Ollama Section -->
+          <div id="ollamaSection" class="section-config">
+            <h3 class="config-title">Ollama Configuration</h3>
+            
+            <div class="form-group">
+              <label for="ollamaUrl" class="form-label">Ollama URL</label>
+              <input type="text" class="form-control-dashboard" id="ollamaUrl" placeholder="http://localhost:11434" value="http://localhost:11434">
+              <div class="form-help">
+                Make sure Ollama is running locally. Download from <a href="https://ollama.ai" target="_blank">ollama.ai</a>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="ollamaModel" class="form-label">
+                Model Name
+                <button type="button" class="btn-icon" id="refreshOllamaModels" title="Refresh models list">
+                  🔄
+                </button>
+              </label>
+              <select class="form-control-dashboard" id="ollamaModel">
+                <option value="">Loading models...</option>
+              </select>
+              <div class="form-help" id="ollamaModelHelp">
+                Select a model from your local Ollama instance
+              </div>
+            </div>
+          </div>
+          
+          <!-- OpenRouter Section -->
+          <div id="openrouterSection" class="section-config">
+            <h3 class="config-title">OpenRouter Configuration</h3>
+            
+            <div class="form-group">
+              <label for="openRouterApiKey" class="form-label">API Key</label>
+              <input type="password" class="form-control-dashboard" id="openRouterApiKey" placeholder="Enter your OpenRouter API key">
+              <div class="form-help">
+                Get your API key from <a href="https://openrouter.ai/keys" target="_blank">OpenRouter</a>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="openRouterModel" class="form-label">Model Name</label>
+              <input type="text" class="form-control-dashboard" id="openRouterModel" placeholder="e.g., anthropic/claude-3.5-sonnet">
+              <div class="form-help">
+                Popular models: anthropic/claude-3.5-sonnet, openai/gpt-4-turbo, google/gemini-pro
+              </div>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button class="btn-secondary" id="resetBtn">Reset to Defaults</button>
+            <button class="btn-primary" id="saveBtn">Save Connection</button>
           </div>
         </div>
-        
-        <!-- Gemini Section -->
-        <div id="geminiSection" class="section-config">
-          <h5 class="mb-3">Google Gemini Configuration</h5>
-          
-          <div class="mb-3">
-            <label for="geminiApiKey" class="form-label">API Key</label>
-            <input type="password" class="form-control" id="geminiApiKey" placeholder="Enter your Gemini API key">
-            <div class="form-text">
-              Get your API key from <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a>
-            </div>
-          </div>
-          
-          <div class="mb-3">
-            <label for="geminiModel" class="form-label">Model Name</label>
-            <input type="text" class="form-control" id="geminiModel" placeholder="e.g., gemini-pro">
-            <div class="form-text">
-              Available models: gemini-pro, gemini-pro-vision
-            </div>
-          </div>
+      </div>
+    </section>
+
+    <!-- Pills Management Panel -->
+    <section class="dashboard-section">
+      <div class="section-title">
+        <h2>💊 Quick Prompt Pills</h2>
+        <p>Customize the quick prompt buttons that appear in the sidebar</p>
+      </div>
+
+      <div class="pills-container">
+        <div class="pills-header">
+          <button class="btn-add-pill" id="addPillBtn">
+            <span class="plus-icon">+</span>
+            Add New Pill
+          </button>
+          <button class="btn-reset-pills" id="resetPillsBtn">
+            ↺ Reset to Defaults
+          </button>
+        </div>
+
+        <div id="pillsList" class="pills-list">
+          <!-- Pills will be dynamically generated here -->
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Edit Pill Modal -->
+  <div id="pillModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Edit Pill</h3>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="pillKey" class="form-label">Pill ID (unique identifier)</label>
+          <input type="text" class="form-control-dashboard" id="pillKey" placeholder="e.g., tldr, summarize">
+          <div class="form-help">Use lowercase letters and underscores only</div>
         </div>
         
-        <!-- Ollama Section -->
-        <div id="ollamaSection" class="section-config">
-          <h5 class="mb-3">Ollama Configuration</h5>
-          
-          <div class="mb-3">
-            <label for="ollamaUrl" class="form-label">Ollama URL</label>
-            <input type="text" class="form-control" id="ollamaUrl" placeholder="http://localhost:11434" value="http://localhost:11434">
-            <div class="form-text">
-              Make sure Ollama is running locally. Download from <a href="https://ollama.ai" target="_blank">ollama.ai</a>
-            </div>
-          </div>
-          
-          <div class="mb-3">
-            <label for="ollamaModel" class="form-label">
-              Model Name
-              <button type="button" class="btn btn-sm btn-outline-secondary ms-2" id="refreshOllamaModels" title="Refresh models list">
-                🔄
-              </button>
-            </label>
-            <select class="form-control" id="ollamaModel">
-              <option value="">Loading models...</option>
-            </select>
-            <div class="form-text" id="ollamaModelHelp">
-              Select a model from your local Ollama instance
-            </div>
-          </div>
+        <div class="form-group">
+          <label for="pillLabel" class="form-label">Button Label</label>
+          <input type="text" class="form-control-dashboard" id="pillLabel" placeholder="e.g., TLDR, Summarize">
+          <div class="form-help">The text displayed on the button</div>
         </div>
         
-        <!-- OpenRouter Section -->
-        <div id="openrouterSection" class="section-config">
-          <h5 class="mb-3">OpenRouter Configuration</h5>
-          
-          <div class="mb-3">
-            <label for="openRouterApiKey" class="form-label">API Key</label>
-            <input type="password" class="form-control" id="openRouterApiKey" placeholder="Enter your OpenRouter API key">
-            <div class="form-text">
-              Get your API key from <a href="https://openrouter.ai/keys" target="_blank">OpenRouter</a>
-            </div>
-          </div>
-          
-          <div class="mb-3">
-            <label for="openRouterModel" class="form-label">Model Name</label>
-            <input type="text" class="form-control" id="openRouterModel" placeholder="e.g., anthropic/claude-3.5-sonnet">
-            <div class="form-text">
-              Popular models: anthropic/claude-3.5-sonnet, openai/gpt-4-turbo, google/gemini-pro
-            </div>
-          </div>
+        <div class="form-group">
+          <label for="pillPrompt" class="form-label">Prompt Text</label>
+          <textarea class="form-control-dashboard textarea-tall" id="pillPrompt" rows="5" placeholder="The prompt that will be sent when this pill is clicked"></textarea>
+          <div class="form-help">This is the message sent to the AI</div>
         </div>
-        
-        <hr class="my-4">
-        
-        <div class="d-flex gap-2">
-          <button class="btn btn-outline-secondary" id="resetBtn">Reset to Defaults</button>
-          <button class="btn btn-primary ms-auto" id="saveBtn">Save Settings</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="cancelPillBtn">Cancel</button>
+        <button class="btn-primary" id="savePillBtn">Save Pill</button>
       </div>
     </div>
   </div>
