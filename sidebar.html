@@ -58,6 +58,9 @@
       
       <!-- Ollama Settings -->
       <div id="ollamaSettings" class="service-settings" style="display: none;">
+        <div class="settings-warning">
+          ⚠️ <strong>Setup Required:</strong> Add <code>launchctl setenv OLLAMA_ORIGINS "*"</code> to ~/.zshrc and restart Ollama
+        </div>
         <div class="settings-group">
           <label class="settings-label">Ollama URL</label>
           <input type="text" class="settings-input" id="ollamaUrlInput" placeholder="http://localhost:11434">

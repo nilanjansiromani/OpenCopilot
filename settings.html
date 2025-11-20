@@ -121,6 +121,22 @@
           <div id="ollamaSection" class="section-config">
             <h3 class="config-title">Ollama Configuration</h3>
             
+            <div class="alert-callout alert-warning">
+              <div class="alert-icon">⚠️</div>
+              <div class="alert-content">
+                <div class="alert-title">Ollama Configuration Required</div>
+                <div class="alert-text">
+                  Ollama does not allow requests from Chrome Extensions by default. 
+                  <br><br>
+                  <strong>To enable:</strong> Add the following to your <code>~/.zshrc</code> or <code>~/.bashrc</code> file:
+                  <br>
+                  <code class="code-block">launchctl setenv OLLAMA_ORIGINS "*"</code>
+                  <br><br>
+                  Then restart Ollama for the changes to take effect.
+                </div>
+              </div>
+            </div>
+            
             <div class="form-group">
               <label for="ollamaUrl" class="form-label">Ollama URL</label>
               <input type="text" class="form-control-dashboard" id="ollamaUrl" placeholder="http://localhost:11434" value="http://localhost:11434">
