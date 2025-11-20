@@ -263,18 +263,16 @@ window.addEventListener('message', (event) => {
   }
 });
 
-// NOTE: Ctrl+Shift+O now opens Settings Dashboard (handled by manifest command)
-// Users can click the extension icon to open the sidebar/modal
-// Keyboard shortcut listener has been disabled
-/*
+// Keyboard shortcut for opening modal (Ctrl+Shift+O / Cmd+Shift+O)
+// This provides a fallback for Arc browser and ensures consistent behavior
 document.addEventListener('keydown', (event) => {
+  // Check for Ctrl+Shift+O or Command+Shift+O
   if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'O') {
     console.log('Keyboard shortcut detected directly in content script');
-    event.preventDefault();
+    event.preventDefault(); // Prevent default browser behavior
     toggleModal();
   }
 });
-*/
 
 // Create floating pill button
 function createFloatingPill() {

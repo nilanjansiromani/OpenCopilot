@@ -162,7 +162,9 @@ highlightr/
 ## 🎯 Usage
 
 ### Opening OpenCopilot
-**Click the extension icon** in your browser toolbar or press **`Ctrl+Shift+O`** (or `⌘+Shift+O` on Mac) to open settings
+**Click the extension icon** or use keyboard shortcuts:
+- **`Ctrl+Shift+O`** / **`⌘+Shift+O`** - Open AI Assistant
+- **`Ctrl+,`** / **`⌘+,`** - Open Settings
 
 Works the same across Chrome, Edge, Brave, Opera, Vivaldi, and all Chromium browsers!
 
@@ -271,7 +273,7 @@ ollama serve
 ### 🚀 Smart Features
 ✅ **Context-Aware** - Automatically analyzes page content  
 ✅ **Quick Actions** - One-click summaries, bullet points, mindmaps  
-✅ **Keyboard Shortcuts** - `Ctrl+Shift+O` to open settings (customizable in `chrome://extensions/shortcuts`)  
+✅ **Keyboard Shortcuts** - Two shortcuts for AI assistant and settings (customizable in `chrome://extensions/shortcuts`)  
 ✅ **Inline Settings** - Configure without leaving the page  
 
 ---
@@ -351,7 +353,7 @@ OpenCopilot is open source and built with pure vanilla JavaScript. Contributions
 
 *No frameworks. No build tools. No complexity.*
 
-Click the extension icon or press `Ctrl+Shift+O` to access settings and experience AI-powered web browsing with complete privacy control! 🚀
+Use the keyboard shortcuts (`Ctrl+Shift+O` for assistant, `Ctrl+,` for settings) and experience AI-powered web browsing with complete privacy control! 🚀
 
 ---
 

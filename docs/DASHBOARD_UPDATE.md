@@ -180,16 +180,19 @@ Possible additions:
 
 ## Keyboard Shortcuts
 
-### Open Settings Dashboard
+### Open AI Assistant Modal
 - **Default**: `Ctrl + Shift + O` (Windows/Linux) / `⌘ + Shift + O` (Mac)
-- **Customizable**: Users can change the key combination at `chrome://extensions/shortcuts`
+- Opens the AI assistant for immediate chat
 
-The keyboard shortcut opens the Settings Dashboard, giving users quick access to:
-- Connection configuration
-- Pill management
-- All extension settings
+### Open Settings Dashboard
+- **Default**: `Ctrl + ,` (Windows/Linux) / `⌘ + ,` (Mac)
+- Opens the Settings Dashboard with:
+  - Connection configuration
+  - Pill management
+  - All extension settings
 
-Users can customize the key combination in Chrome's built-in keyboard shortcuts manager.
+### Customization
+Users can customize both key combinations in Chrome's built-in keyboard shortcuts manager at `chrome://extensions/shortcuts`.
 
 ## Compatibility
 

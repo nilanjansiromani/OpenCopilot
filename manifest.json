@@ -34,12 +34,19 @@
     }
   },
   "commands": {
-    "open-settings": {
+    "toggle-modal": {
       "suggested_key": {
         "default": "Ctrl+Shift+O",
         "mac": "Command+Shift+O"
       },
-      "description": "Open OpenCopilot Settings"
+      "description": "Open AI Assistant Modal"
+    },
+    "open-settings": {
+      "suggested_key": {
+        "default": "Ctrl+K",
+        "mac": "Ctrl+Shift+O"
+      },
+      "description": "Open Settings Dashboard"
     }
   },
   "web_accessible_resources": [

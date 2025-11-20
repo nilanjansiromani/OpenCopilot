@@ -6,7 +6,10 @@ console.log('OpenCopilot background service worker started');
 // Handle keyboard shortcuts
 chrome.commands.onCommand.addListener((command) => {
   console.log('Command received:', command);
-  if (command === 'open-settings') {
+  if (command === 'toggle-modal') {
+    // Open AI assistant modal
+    toggleModalOnActiveTab();
+  } else if (command === 'open-settings') {
     // Open settings dashboard
     chrome.runtime.openOptionsPage();
   }
