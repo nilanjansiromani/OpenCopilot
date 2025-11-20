@@ -6,9 +6,12 @@ console.log('OpenCopilot background service worker started');
 // Handle keyboard shortcuts
 chrome.commands.onCommand.addListener((command) => {
   console.log('Command received:', command);
-  if (command === 'toggle-modal') {
-    // Open AI assistant modal
+  if (command === 'toggle-modal' || command === 'open-modal-alt') {
+    // Open AI assistant modal (both shortcuts)
     toggleModalOnActiveTab();
+  } else if (command === 'toggle-sidebar') {
+    // Open AI assistant sidebar
+    toggleSidebarOnActiveTab();
   } else if (command === 'open-settings') {
     // Open settings dashboard
     chrome.runtime.openOptionsPage();
@@ -21,42 +24,104 @@ chrome.action.onClicked.addListener((tab) => {
   toggleSidebarOnActiveTab();
 });
 
-// Helper function to toggle sidebar on active tab
-function toggleSidebarOnActiveTab() {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    if (tabs[0]) {
-      console.log('Sending toggleSidebar message to tab:', tabs[0].id);
-      chrome.tabs.sendMessage(tabs[0].id, { action: 'toggleSidebar' }, (response) => {
-        const lastError = chrome.runtime.lastError;
-        if (lastError) {
-          console.error('Error sending message:', lastError.message);
-        } else if (response) {
-          console.log('Toggle response:', response);
-        }
+// Helper function to check if content script is loaded and inject if needed
+async function ensureContentScriptLoaded(tabId, url) {
+  // Check if URL is a restricted page where content scripts can't run
+  const restrictedProtocols = ['chrome://', 'chrome-extension://', 'edge://', 'about:', 'data:', 'file://'];
+  if (restrictedProtocols.some(protocol => url.startsWith(protocol))) {
+    console.log('Cannot inject content script on restricted page:', url);
+    return false;
+  }
+  
+  try {
+    // Try to ping the content script
+    const response = await chrome.tabs.sendMessage(tabId, { action: 'ping' });
+    console.log('Content script already loaded');
+    return true;
+  } catch (error) {
+    console.log('Content script not loaded, injecting...');
+    try {
+      // Inject the content script
+      await chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        files: ['content.js']
       });
-    } else {
-      console.error('No active tab found');
+      
+      // Wait a bit for the script to initialize
+      await new Promise(resolve => setTimeout(resolve, 100));
+      console.log('Content script injected successfully');
+      return true;
+    } catch (injectError) {
+      console.error('Failed to inject content script:', injectError);
+      return false;
     }
-  });
+  }
+}
+
+// Helper function to toggle sidebar on active tab
+async function toggleSidebarOnActiveTab() {
+  try {
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tabs[0]) {
+      console.error('No active tab found');
+      return;
+    }
+    
+    const tab = tabs[0];
+    console.log('Attempting to toggle sidebar on tab:', tab.id, tab.url);
+    
+    // Ensure content script is loaded
+    const isLoaded = await ensureContentScriptLoaded(tab.id, tab.url);
+    if (!isLoaded) {
+      console.error('Cannot toggle sidebar: content script not available');
+      return;
+    }
+    
+    // Send the toggle message
+    chrome.tabs.sendMessage(tab.id, { action: 'toggleSidebar' }, (response) => {
+      const lastError = chrome.runtime.lastError;
+      if (lastError) {
+        console.error('Error sending toggleSidebar message:', lastError.message);
+      } else if (response) {
+        console.log('Toggle sidebar response:', response);
+      }
+    });
+  } catch (error) {
+    console.error('Error in toggleSidebarOnActiveTab:', error);
+  }
 }
 
 // Helper function to toggle modal on active tab
-function toggleModalOnActiveTab() {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    if (tabs[0]) {
-      console.log('Sending toggleModal message to tab:', tabs[0].id);
-      chrome.tabs.sendMessage(tabs[0].id, { action: 'toggleModal' }, (response) => {
-        const lastError = chrome.runtime.lastError;
-        if (lastError) {
-          console.error('Error sending message:', lastError.message);
-        } else if (response) {
-          console.log('Toggle response:', response);
-        }
-      });
-    } else {
+async function toggleModalOnActiveTab() {
+  try {
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tabs[0]) {
       console.error('No active tab found');
+      return;
     }
-  });
+    
+    const tab = tabs[0];
+    console.log('Attempting to toggle modal on tab:', tab.id, tab.url);
+    
+    // Ensure content script is loaded
+    const isLoaded = await ensureContentScriptLoaded(tab.id, tab.url);
+    if (!isLoaded) {
+      console.error('Cannot toggle modal: content script not available');
+      return;
+    }
+    
+    // Send the toggle message
+    chrome.tabs.sendMessage(tab.id, { action: 'toggleModal' }, (response) => {
+      const lastError = chrome.runtime.lastError;
+      if (lastError) {
+        console.error('Error sending toggleModal message:', lastError.message);
+      } else if (response) {
+        console.log('Toggle modal response:', response);
+      }
+    });
+  } catch (error) {
+    console.error('Error in toggleModalOnActiveTab:', error);
+  }
 }
 
 // Handle installation

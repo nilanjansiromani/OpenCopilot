@@ -41,10 +41,24 @@
       },
       "description": "Open AI Assistant Modal"
     },
+    "toggle-sidebar": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      },
+      "description": "Open AI Assistant Sidebar"
+    },
+    "open-modal-alt": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+M",
+        "mac": "Command+Shift+M"
+      },
+      "description": "Open AI Assistant Modal (Alternative)"
+    },
     "open-settings": {
       "suggested_key": {
-        "default": "Ctrl+K",
-        "mac": "Ctrl+Shift+O"
+        "default": "Ctrl+Shift+K",
+        "mac": "Command+Shift+K"
       },
       "description": "Open Settings Dashboard"
     }

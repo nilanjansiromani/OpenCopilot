@@ -84,9 +84,19 @@ function toggleSidebar() {
   sidebarVisible = !sidebarVisible;
   console.log('Toggling sidebar, new state:', sidebarVisible ? 'visible' : 'hidden');
   
+  // Get reference to the pill button
+  const pill = document.getElementById('opencopilot-floating-pill');
+  
   if (sidebarVisible) {
     // Make visible first to start transition
     sidebarIframe.style.visibility = 'visible';
+    
+    // Hide the pill button when sidebar is open
+    if (pill) {
+      pill.style.opacity = '0';
+      pill.style.visibility = 'hidden';
+      pill.style.pointerEvents = 'none';
+    }
     
     // Small delay to ensure visibility change is applied before animations
     setTimeout(() => {
@@ -105,6 +115,13 @@ function toggleSidebar() {
     sidebarIframe.style.right = '-100%';
     sidebarIframe.style.opacity = '0';
     
+    // Show the pill button when sidebar is closed
+    if (pill) {
+      pill.style.opacity = '1';
+      pill.style.visibility = 'visible';
+      pill.style.pointerEvents = 'auto';
+    }
+    
     // Set visibility to hidden after transition completes
     setTimeout(() => {
       if (!sidebarVisible) { // Double-check it's still supposed to be hidden
@@ -118,7 +135,11 @@ function toggleSidebar() {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('Message received in content script:', request);
   
-  if (request.action === 'toggleSidebar') {
+  if (request.action === 'ping') {
+    // Respond to ping to confirm content script is loaded
+    sendResponse({ success: true, loaded: true });
+  }
+  else if (request.action === 'toggleSidebar') {
     console.log('Toggling sidebar visibility');
     toggleSidebar();
     sendResponse({ success: true, visible: sidebarVisible });
@@ -177,9 +198,19 @@ function toggleModal() {
   modalVisible = !modalVisible;
   console.log('Toggling modal, new state:', modalVisible ? 'visible' : 'hidden');
   
+  // Get reference to the pill button
+  const pill = document.getElementById('opencopilot-floating-pill');
+  
   if (modalVisible) {
     // Make visible first
     modalIframe.style.visibility = 'visible';
+    
+    // Hide the pill button when modal is open
+    if (pill) {
+      pill.style.opacity = '0';
+      pill.style.visibility = 'hidden';
+      pill.style.pointerEvents = 'none';
+    }
     
     // Small delay to ensure visibility change is applied before animations
     setTimeout(() => {
@@ -202,6 +233,14 @@ function toggleModal() {
   } else {
     // Hide by fading out
     modalIframe.style.opacity = '0';
+    
+    // Show the pill button when modal is closed
+    if (pill && !sidebarVisible) {
+      // Only show pill if sidebar is also closed
+      pill.style.opacity = '1';
+      pill.style.visibility = 'visible';
+      pill.style.pointerEvents = 'auto';
+    }
     
     // Set visibility to hidden after transition completes
     setTimeout(() => {
@@ -311,8 +350,11 @@ function createFloatingPill() {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
     cursor: pointer !important;
     z-index: 2147483647 !important; /* Highest possible z-index */
-    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease, visibility 0.3s ease !important;
     user-select: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
   `;
   
   // Style the icon
