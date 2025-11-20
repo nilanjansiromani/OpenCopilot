@@ -13,7 +13,8 @@
 
 </div>
 
----
+<img width="500" alt="image" src="https://gecgithub01.walmart.com/n0s00jx/OpenCopilot/assets/20577/148e6d6a-bc8c-45a4-8ff4-efd8fafef35e">
+
 
 ## 🌟 What Makes OpenCopilot Different?
 
