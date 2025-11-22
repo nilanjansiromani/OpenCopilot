@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenCopilot Menu</title>
+  <style>
+    body {
+      width: 200px;
+      padding: 10px;
+      font-family: 'Lato', sans-serif;
+      background-color: #051020;
+      color: white;
+    }
+    .menu-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      color: white;
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: background-color 0.2s;
+    }
+    .menu-item:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    .menu-icon {
+      margin-right: 8px;
+      font-size: 16px;
+    }
+    .title {
+      font-size: 16px;
+      margin-bottom: 10px;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="title">⚡ OpenCopilot</div>
+  <div class="menu-container">
+    <a class="menu-item" id="toggleSidebar">
+      <span class="menu-icon">👁️</span>
+      <span>Toggle Sidebar</span>
+    </a>
+    <a class="menu-item" id="settingsLink">
+      <span class="menu-icon">⚙️</span>
+      <span>Settings</span>
+    </a>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

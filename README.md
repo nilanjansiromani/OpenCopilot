@@ -4,9 +4,10 @@
 
 **Transform any webpage into an intelligent conversation. 100% customizable. 100% private (if you want).**
 
-*Works on Chrome, Edge, Brave, Opera, Vivaldi & all Chromium-based browsers*
+*Works on Chrome, Edge, Brave, Opera, Vivaldi, Firefox & all major browsers*
 
 ![Chromium Compatible](https://img.shields.io/badge/Chromium-Compatible-4285F4?style=flat-square)
+![Firefox Compatible](https://img.shields.io/badge/Firefox-Compatible-FF7139?style=flat-square)
 ![Multi-AI](https://img.shields.io/badge/AI-Multi--Provider-00D9FF?style=flat-square)
 ![Privacy First](https://img.shields.io/badge/Privacy-100%25_Local_Option-10b981?style=flat-square)
 ![Version](https://img.shields.io/badge/Version-1.1.0-blue?style=flat-square)
@@ -37,8 +38,9 @@ Generate Mermaid Mindmaps, visualise key information from the page
 - **No Vendor Lock-in** - Works with Groq, Gemini, Ollama, OpenRouter, and more
 
 ### 🌐 **Universal Compatibility**
-Built for **all Chromium-based browsers**:
+Built for **all major browsers**:
 - ✅ Google Chrome
+- ✅ Mozilla Firefox
 - ✅ Microsoft Edge
 - ✅ Brave Browser
 - ✅ Opera / Opera GX
@@ -53,7 +55,7 @@ Pure Vanilla JavaScript. Clone → Load → Done. No npm, no webpack, no headach
 
 ## 🚀 Quick Start
 
-### Installation (30 seconds) - Works on Any Chromium Browser
+### Installation (30 seconds)
 
 #### For Chrome, Edge, Brave, Opera, Vivaldi, Arc, etc.
 
@@ -63,8 +65,19 @@ Pure Vanilla JavaScript. Clone → Load → Done. No npm, no webpack, no headach
    - **Or**: Menu → Extensions → Manage Extensions
 2. Enable **"Developer mode"** (top-right toggle)
 3. Click **"Load unpacked"**
-4. Select the OpenCopilot folder
+4. Select the **Chrome extension** folder
 5. Done! ✨
+
+#### For Firefox
+
+1. Open Firefox and navigate to `about:debugging`
+2. Click **"This Firefox"** (in the left sidebar)
+3. Click **"Load Temporary Add-on..."**
+4. Navigate to the **Firefox extension** folder
+5. Select the `manifest.json` file
+6. Done! ✨
+
+> **Note for Firefox users**: Temporary add-ons are removed when Firefox is closed. For permanent installation, you'll need to sign the extension through [addons.mozilla.org](https://addons.mozilla.org) or use Firefox Developer Edition/Nightly with `xpinstall.signatures.required` set to `false` in `about:config`.
 
 ### First Use
 
@@ -135,24 +148,35 @@ OpenCopilot gives you the freedom to choose based on your priorities:
 ## 📁 Project Structure
 
 ```
-highlightr/
-├── manifest.json              # Extension configuration
-├── background.js              # Service worker
-├── content.js                 # Page content injection
-├── sidebar.html/js/css        # Sidebar interface
-├── modal.html/css             # Modal interface
-├── settings.html/js/css       # Settings page
-├── aiService.js               # AI integrations
-├── htmlToMarkdown.js          # HTML converter
-├── assets/
-│   ├── icons/                 # Extension icons
-│   ├── fonts/                 # Lato font files
-│   └── libs/                  # marked.js, mermaid.js
-└── docs/                      # Documentation
-    ├── QUICKSTART.md
-    ├── FEATURES.md
-    ├── INSTALLATION.md
-    └── ... more docs
+OpenCopilot/
+├── README.md                  # This file
+├── Chrome extension/          # Chrome/Chromium browsers
+│   ├── manifest.json          # Chrome extension configuration
+│   ├── background.js          # Service worker (Manifest V3)
+│   ├── content.js             # Page content injection
+│   ├── sidebar.html/js/css    # Sidebar interface
+│   ├── modal.html/css         # Modal interface
+│   ├── settings.html/js/css   # Settings page
+│   ├── aiService.js           # AI integrations
+│   ├── htmlToMarkdown.js      # HTML converter
+│   └── assets/
+│       ├── icons/             # Extension icons
+│       ├── fonts/             # Lato font files
+│       └── libs/              # marked.js, mermaid.js
+│
+└── Firefox extension/         # Firefox browser
+    ├── manifest.json          # Firefox extension configuration
+    ├── background.js          # Background script (Firefox-compatible)
+    ├── content.js             # Page content injection
+    ├── sidebar.html/js/css    # Sidebar interface
+    ├── modal.html/css         # Modal interface
+    ├── settings.html/js/css   # Settings page
+    ├── aiService.js           # AI integrations
+    ├── htmlToMarkdown.js      # HTML converter
+    └── assets/
+        ├── icons/             # Extension icons
+        ├── fonts/             # Lato font files
+        └── libs/              # marked.js, mermaid.js
 ```
 
 ---
@@ -162,9 +186,10 @@ highlightr/
 ### Opening OpenCopilot
 **Click the extension icon** or use keyboard shortcuts:
 - **`Ctrl+Shift+O`** / **`⌘+Shift+O`** - Open AI Assistant
-- **`Ctrl+,`** / **`⌘+,`** - Open Settings
+- **`Ctrl+Shift+S`** / **`⌘+Shift+S`** - Open AI Assistant Sidebar
+- **`Ctrl+Shift+K`** / **`⌘+Shift+K`** - Open Settings
 
-Works the same across Chrome, Edge, Brave, Opera, Vivaldi, and all Chromium browsers!
+Works the same across Chrome, Firefox, Edge, Brave, Opera, Vivaldi, and all major browsers!
 
 ### Quick Actions
 Click any pill for instant analysis:
@@ -250,9 +275,9 @@ ollama serve
 ✅ **Your Data, Your Choice** - No forced cloud services  
 
 ### 🌐 Universal Compatibility
-✅ **All Chromium Browsers** - Chrome, Edge, Brave, Opera, Vivaldi, Arc  
+✅ **All Major Browsers** - Chrome, Firefox, Edge, Brave, Opera, Vivaldi, Arc  
 ✅ **Cross-Platform** - Windows, macOS, Linux  
-✅ **No Browser-Specific Code** - Pure web standards  
+✅ **Browser-Optimized** - Separate builds for Chrome & Firefox  
 
 ### ⚡ Developer Friendly
 ✅ **No Build Process** - Just load and go  
@@ -333,7 +358,7 @@ Run Ollama locally and keep all your conversations on your machine. Perfect for:
 - Stack Overflow deep dives
 
 ### 🌍 **Multi-Browser Users**
-Switch between Chrome, Edge, Brave, or any Chromium browser - OpenCopilot works everywhere!
+Switch between Chrome, Firefox, Edge, Brave, or any modern browser - OpenCopilot works everywhere!
 
 ---
 
@@ -351,7 +376,7 @@ OpenCopilot is open source and built with pure vanilla JavaScript. Contributions
 
 *No frameworks. No build tools. No complexity.*
 
-Use the keyboard shortcuts (`Ctrl+Shift+O` for assistant, `Ctrl+,` for settings) and experience AI-powered web browsing with complete privacy control! 🚀
+Use the keyboard shortcuts (`Ctrl+Shift+O` for assistant, `Ctrl+Shift+K` for settings) and experience AI-powered web browsing with complete privacy control! 🚀
 
 ---
 
@@ -359,7 +384,7 @@ Use the keyboard shortcuts (`Ctrl+Shift+O` for assistant, `Ctrl+,` for settings)
 
 **Your Web. Your AI. Your Privacy.**
 
-*Works on Chrome • Edge • Brave • Opera • Vivaldi • Arc • All Chromium Browsers*
+*Works on Chrome • Firefox • Edge • Brave • Opera • Vivaldi • Arc • All Major Browsers*
 
 </div>
 
