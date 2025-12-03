@@ -138,7 +138,9 @@ chrome.runtime.onInstalled.addListener((details) => {
         openRouterApiKey: '',
         openRouterModel: 'z-ai/glm-4.5-air:free',
         ollamaUrl: 'http://localhost:11434',
-        ollamaModel: 'granite4:350m'
+        ollamaModel: 'granite4:350m',
+        lmstudioUrl: 'http://localhost:1234',
+        lmstudioModel: 'local-model'
       }
     });
     

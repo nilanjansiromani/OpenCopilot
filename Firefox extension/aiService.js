@@ -1,4 +1,4 @@
-// AI Service integration for Groq, Gemini, Ollama, and OpenRouter
+// AI Service integration for Groq, Gemini, Ollama, LM Studio, and OpenRouter
 
 class AIService {
   constructor(settings) {
@@ -13,6 +13,8 @@ class AIService {
         return this.sendToGroq(messages, systemPrompt);
       case 'ollama':
         return this.sendToOllama(messages, systemPrompt);
+      case 'lmstudio':
+        return this.sendToLMStudio(messages, systemPrompt);
       case 'openrouter':
         return this.sendToOpenRouter(messages, systemPrompt);
       case 'gemini':
@@ -84,6 +86,38 @@ class AIService {
       return data.message.content;
     } catch (error) {
       throw new Error(`Ollama connection failed: ${error.message}. Make sure Ollama is running on ${ollamaUrl}`);
+    }
+  }
+  
+  async sendToLMStudio(messages, systemPrompt) {
+    const { lmstudioUrl = 'http://localhost:1234', lmstudioModel = 'local-model' } = this.settings;
+    
+    const formattedMessages = systemPrompt 
+      ? [{ role: 'system', content: systemPrompt }, ...messages]
+      : messages;
+    
+    try {
+      const response = await fetch(`${lmstudioUrl}/v1/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: lmstudioModel,
+          messages: formattedMessages,
+          temperature: 0.7,
+          max_tokens: 2048
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('LM Studio request failed. Make sure LM Studio is running with a model loaded.');
+      }
+      
+      const data = await response.json();
+      return data.choices[0].message.content;
+    } catch (error) {
+      throw new Error(`LM Studio connection failed: ${error.message}. Make sure LM Studio is running on ${lmstudioUrl}`);
     }
   }
   

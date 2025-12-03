@@ -31,6 +31,7 @@ const sections = {
   groq: document.getElementById('groqSection'),
   gemini: document.getElementById('geminiSection'),
   ollama: document.getElementById('ollamaSection'),
+  lmstudio: document.getElementById('lmstudioSection'),
   openrouter: document.getElementById('openrouterSection')
 };
 const saveBtn = document.getElementById('saveBtn');
@@ -77,6 +78,11 @@ function updateSections() {
   // Fetch Ollama models if Ollama is selected
   if (selectedService === 'ollama') {
     fetchOllamaModels();
+  }
+  
+  // Fetch LM Studio models if LM Studio is selected
+  if (selectedService === 'lmstudio') {
+    fetchLMStudioModels();
   }
 }
 
@@ -142,6 +148,70 @@ async function fetchOllamaModels() {
   }
 }
 
+// Fetch available models from LM Studio API
+async function fetchLMStudioModels() {
+  const lmstudioUrl = document.getElementById('lmstudioUrl').value || 'http://localhost:1234';
+  const lmstudioModelSelect = document.getElementById('lmstudioModel');
+  const refreshLMStudioModelsBtn = document.getElementById('refreshLMStudioModels');
+  const helpText = document.getElementById('lmstudioModelHelp');
+  
+  // Store the currently selected value
+  const currentValue = lmstudioModelSelect.value;
+  
+  // Show loading state
+  lmstudioModelSelect.innerHTML = '<option value="">Loading models...</option>';
+  lmstudioModelSelect.disabled = true;
+  refreshLMStudioModelsBtn.disabled = true;
+  
+  try {
+    const response = await fetch(`${lmstudioUrl}/v1/models`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.data && data.data.length > 0) {
+      // Clear and populate dropdown with models
+      lmstudioModelSelect.innerHTML = '';
+      
+      data.data.forEach(model => {
+        const option = document.createElement('option');
+        option.value = model.id;
+        option.textContent = model.id;
+        lmstudioModelSelect.appendChild(option);
+      });
+      
+      // Restore previously selected value if it exists in the list
+      if (currentValue && data.data.some(m => m.id === currentValue)) {
+        lmstudioModelSelect.value = currentValue;
+      }
+      
+      helpText.textContent = `Found ${data.data.length} loaded model(s) in LM Studio`;
+      helpText.className = 'form-help';
+      helpText.style.color = '#10b981';
+    } else {
+      lmstudioModelSelect.innerHTML = '<option value="local-model">local-model (default)</option>';
+      helpText.textContent = 'No models detected. Make sure a model is loaded in LM Studio.';
+      helpText.style.color = '#f59e0b';
+    }
+  } catch (error) {
+    console.error('Error fetching LM Studio models:', error);
+    lmstudioModelSelect.innerHTML = '<option value="local-model">local-model (default)</option>';
+    helpText.textContent = `Error: ${error.message}. Make sure LM Studio server is running at ${lmstudioUrl}`;
+    helpText.style.color = '#ef4444';
+  } finally {
+    lmstudioModelSelect.disabled = false;
+    refreshLMStudioModelsBtn.disabled = false;
+  }
+}
+
 // Load settings
 function loadSettings() {
   chrome.storage.sync.get(['settings'], (result) => {
@@ -181,6 +251,14 @@ function loadSettings() {
         document.getElementById('ollamaModel').value = settings.ollamaModel;
       }
       
+      // LM Studio settings
+      if (settings.lmstudioUrl) {
+        document.getElementById('lmstudioUrl').value = settings.lmstudioUrl;
+      }
+      if (settings.lmstudioModel) {
+        document.getElementById('lmstudioModel').value = settings.lmstudioModel;
+      }
+      
       // OpenRouter settings
       if (settings.openRouterApiKey) {
         document.getElementById('openRouterApiKey').value = settings.openRouterApiKey;
@@ -204,6 +282,8 @@ function saveSettings() {
     geminiModel: document.getElementById('geminiModel').value || 'gemini-pro',
     ollamaUrl: document.getElementById('ollamaUrl').value,
     ollamaModel: document.getElementById('ollamaModel').value || 'llama2',
+    lmstudioUrl: document.getElementById('lmstudioUrl').value,
+    lmstudioModel: document.getElementById('lmstudioModel').value || 'local-model',
     openRouterApiKey: document.getElementById('openRouterApiKey').value,
     openRouterModel: document.getElementById('openRouterModel').value || 'anthropic/claude-3.5-sonnet'
   };
@@ -221,6 +301,11 @@ function saveSettings() {
   
   if (selectedService === 'ollama' && !settings.ollamaUrl) {
     showStatus('Please enter your Ollama URL', 'danger');
+    return;
+  }
+  
+  if (selectedService === 'lmstudio' && !settings.lmstudioUrl) {
+    showStatus('Please enter your LM Studio URL', 'danger');
     return;
   }
   
@@ -245,6 +330,8 @@ function resetSettings() {
       geminiModel: 'gemini-pro',
       ollamaUrl: 'http://localhost:11434',
       ollamaModel: 'llama2',
+      lmstudioUrl: 'http://localhost:1234',
+      lmstudioModel: 'local-model',
       openRouterApiKey: '',
       openRouterModel: 'anthropic/claude-3.5-sonnet'
     };
@@ -468,11 +555,25 @@ saveBtn.addEventListener('click', saveSettings);
 resetBtn.addEventListener('click', resetSettings);
 refreshOllamaModelsBtn.addEventListener('click', fetchOllamaModels);
 
+// LM Studio refresh button
+const refreshLMStudioModelsBtn = document.getElementById('refreshLMStudioModels');
+if (refreshLMStudioModelsBtn) {
+  refreshLMStudioModelsBtn.addEventListener('click', fetchLMStudioModels);
+}
+
 // Fetch models when Ollama URL changes
 document.getElementById('ollamaUrl').addEventListener('blur', () => {
   const selectedService = document.querySelector('input[name="service"]:checked').value;
   if (selectedService === 'ollama') {
     fetchOllamaModels();
+  }
+});
+
+// Fetch models when LM Studio URL changes
+document.getElementById('lmstudioUrl').addEventListener('blur', () => {
+  const selectedService = document.querySelector('input[name="service"]:checked').value;
+  if (selectedService === 'lmstudio') {
+    fetchLMStudioModels();
   }
 });
 

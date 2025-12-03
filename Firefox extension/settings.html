@@ -64,6 +64,14 @@
             </div>
           </label>
           
+          <label class="service-card-dashboard" for="lmstudio">
+            <input type="radio" id="lmstudio" name="service" value="lmstudio">
+            <div class="service-content">
+              <div class="service-icon-large">🖥️</div>
+              <div class="service-name">LM Studio</div>
+            </div>
+          </label>
+          
           <label class="service-card-dashboard" for="openrouter">
             <input type="radio" id="openrouter" name="service" value="openrouter">
             <div class="service-content">
@@ -157,6 +165,52 @@
               </select>
               <div class="form-help" id="ollamaModelHelp">
                 Select a model from your local Ollama instance
+              </div>
+            </div>
+          </div>
+          
+          <!-- LM Studio Section -->
+          <div id="lmstudioSection" class="section-config">
+            <h3 class="config-title">LM Studio Configuration</h3>
+            
+            <div class="alert-callout alert-info">
+              <div class="alert-icon">ℹ️</div>
+              <div class="alert-content">
+                <div class="alert-title">LM Studio Local AI</div>
+                <div class="alert-text">
+                  LM Studio runs AI models locally on your computer with a beautiful UI.
+                  <br><br>
+                  <strong>To use:</strong>
+                  <ol style="margin: 10px 0; padding-left: 20px;">
+                    <li>Download LM Studio from <a href="https://lmstudio.ai" target="_blank">lmstudio.ai</a></li>
+                    <li>Load a model in LM Studio</li>
+                    <li>Start the local server (usually on port 1234)</li>
+                    <li>Enter the server URL below</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="lmstudioUrl" class="form-label">LM Studio URL</label>
+              <input type="text" class="form-control-dashboard" id="lmstudioUrl" placeholder="http://localhost:1234" value="http://localhost:1234">
+              <div class="form-help">
+                Default is http://localhost:1234. Make sure LM Studio server is running.
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="lmstudioModel" class="form-label">
+                Model Name
+                <button type="button" class="btn-icon" id="refreshLMStudioModels" title="Refresh models list">
+                  🔄
+                </button>
+              </label>
+              <select class="form-control-dashboard" id="lmstudioModel">
+                <option value="local-model">local-model (default)</option>
+              </select>
+              <div class="form-help" id="lmstudioModelHelp">
+                Select the loaded model from your LM Studio instance
               </div>
             </div>
           </div>

@@ -196,6 +196,16 @@ body {
   border-left-width: 4px;
 }
 
+.alert-info {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  border-left-width: 4px;
+}
+
+.alert-info .alert-title {
+  color: #60a5fa;
+}
+
 .alert-icon {
   font-size: 24px;
   line-height: 1;

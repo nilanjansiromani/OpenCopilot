@@ -50,6 +50,7 @@ const serviceNames = {
   groq: 'Groq',
   gemini: 'Gemini',
   ollama: 'Ollama',
+  lmstudio: 'LM Studio',
   openrouter: 'OpenRouter'
 };
 
@@ -820,6 +821,8 @@ function populateSettingsPanel() {
   document.getElementById('geminiModelInput').value = settings.geminiModel || 'gemini-pro';
   document.getElementById('ollamaUrlInput').value = settings.ollamaUrl || 'http://localhost:11434';
   document.getElementById('ollamaModelInput').value = settings.ollamaModel || 'llama2';
+  document.getElementById('lmstudioUrlInput').value = settings.lmstudioUrl || 'http://localhost:1234';
+  document.getElementById('lmstudioModelInput').value = settings.lmstudioModel || 'local-model';
   document.getElementById('openRouterApiKeyInput').value = settings.openRouterApiKey || '';
   document.getElementById('openRouterModelInput').value = settings.openRouterModel || 'anthropic/claude-3.5-sonnet';
   
@@ -832,11 +835,17 @@ function updateServiceSettingsVisibility() {
   document.getElementById('groqSettings').style.display = selected === 'groq' ? 'block' : 'none';
   document.getElementById('geminiSettings').style.display = selected === 'gemini' ? 'block' : 'none';
   document.getElementById('ollamaSettings').style.display = selected === 'ollama' ? 'block' : 'none';
+  document.getElementById('lmstudioSettings').style.display = selected === 'lmstudio' ? 'block' : 'none';
   document.getElementById('openrouterSettings').style.display = selected === 'openrouter' ? 'block' : 'none';
   
   // Fetch Ollama models if Ollama is selected
   if (selected === 'ollama') {
     fetchOllamaModelsSidebar();
+  }
+  
+  // Fetch LM Studio models if LM Studio is selected
+  if (selected === 'lmstudio') {
+    fetchLMStudioModelsSidebar();
   }
 }
 
@@ -910,6 +919,75 @@ async function fetchOllamaModelsSidebar() {
   }
 }
 
+// Fetch available models from LM Studio API
+async function fetchLMStudioModelsSidebar() {
+  const lmstudioUrl = document.getElementById('lmstudioUrlInput').value || 'http://localhost:1234';
+  const lmstudioModelSelect = document.getElementById('lmstudioModelInput');
+  const helpText = document.getElementById('lmstudioModelHelpSidebar') || document.getElementById('lmstudioModelHelpModal');
+  const refreshBtn = document.getElementById('refreshLMStudioModelsSidebar') || document.getElementById('refreshLMStudioModelsModal');
+  
+  // Store the currently selected value
+  const currentValue = lmstudioModelSelect.value;
+  
+  // Show loading state
+  lmstudioModelSelect.innerHTML = '<option value="">Loading models...</option>';
+  lmstudioModelSelect.disabled = true;
+  if (refreshBtn) refreshBtn.disabled = true;
+  
+  try {
+    const response = await fetch(`${lmstudioUrl}/v1/models`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.data && data.data.length > 0) {
+      // Clear and populate dropdown with models
+      lmstudioModelSelect.innerHTML = '';
+      
+      data.data.forEach(model => {
+        const option = document.createElement('option');
+        option.value = model.id;
+        option.textContent = model.id;
+        lmstudioModelSelect.appendChild(option);
+      });
+      
+      // Restore previously selected value if it exists in the list
+      if (currentValue && data.data.some(m => m.id === currentValue)) {
+        lmstudioModelSelect.value = currentValue;
+      }
+      
+      if (helpText) {
+        helpText.textContent = `Found ${data.data.length} loaded model(s) in LM Studio`;
+        helpText.style.color = '#10b981';
+      }
+    } else {
+      lmstudioModelSelect.innerHTML = '<option value="local-model">local-model (default)</option>';
+      if (helpText) {
+        helpText.textContent = 'No models detected. Load a model in LM Studio.';
+        helpText.style.color = '#f59e0b';
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching LM Studio models:', error);
+    lmstudioModelSelect.innerHTML = '<option value="local-model">local-model (default)</option>';
+    if (helpText) {
+      helpText.textContent = `Error: ${error.message}. Make sure LM Studio server is running at ${lmstudioUrl}`;
+      helpText.style.color = '#ef4444';
+    }
+  } finally {
+    lmstudioModelSelect.disabled = false;
+    if (refreshBtn) refreshBtn.disabled = false;
+  }
+}
+
 // Toggle settings panel
 settingsBtn.addEventListener('click', () => {
   settingsPanel.classList.toggle('show');
@@ -933,12 +1011,32 @@ if (refreshOllamaModelsModalBtn) {
   refreshOllamaModelsModalBtn.addEventListener('click', fetchOllamaModelsSidebar);
 }
 
+// Refresh LM Studio models button
+const refreshLMStudioModelsSidebarBtn = document.getElementById('refreshLMStudioModelsSidebar');
+const refreshLMStudioModelsModalBtn = document.getElementById('refreshLMStudioModelsModal');
+if (refreshLMStudioModelsSidebarBtn) {
+  refreshLMStudioModelsSidebarBtn.addEventListener('click', fetchLMStudioModelsSidebar);
+}
+if (refreshLMStudioModelsModalBtn) {
+  refreshLMStudioModelsModalBtn.addEventListener('click', fetchLMStudioModelsSidebar);
+}
+
 // Fetch models when Ollama URL changes
 const ollamaUrlInput = document.getElementById('ollamaUrlInput');
 if (ollamaUrlInput) {
   ollamaUrlInput.addEventListener('blur', () => {
     if (serviceSelect.value === 'ollama') {
       fetchOllamaModelsSidebar();
+    }
+  });
+}
+
+// Fetch models when LM Studio URL changes
+const lmstudioUrlInput = document.getElementById('lmstudioUrlInput');
+if (lmstudioUrlInput) {
+  lmstudioUrlInput.addEventListener('blur', () => {
+    if (serviceSelect.value === 'lmstudio') {
+      fetchLMStudioModelsSidebar();
     }
   });
 }
@@ -953,6 +1051,8 @@ saveSettingsBtn.addEventListener('click', () => {
     geminiModel: document.getElementById('geminiModelInput').value || 'gemini-pro',
     ollamaUrl: document.getElementById('ollamaUrlInput').value || 'http://localhost:11434',
     ollamaModel: document.getElementById('ollamaModelInput').value || 'llama2',
+    lmstudioUrl: document.getElementById('lmstudioUrlInput').value || 'http://localhost:1234',
+    lmstudioModel: document.getElementById('lmstudioModelInput').value || 'local-model',
     openRouterApiKey: document.getElementById('openRouterApiKeyInput').value,
     openRouterModel: document.getElementById('openRouterModelInput').value || 'anthropic/claude-3.5-sonnet'
   };
@@ -971,6 +1071,7 @@ saveSettingsBtn.addEventListener('click', () => {
         case 'groq': modelName = newSettings.groqModel; break;
         case 'gemini': modelName = newSettings.geminiModel; break;
         case 'ollama': modelName = newSettings.ollamaModel; break;
+        case 'lmstudio': modelName = newSettings.lmstudioModel; break;
         case 'openrouter': modelName = newSettings.openRouterModel; break;
       }
       

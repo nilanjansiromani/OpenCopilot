@@ -84,7 +84,7 @@ Pure Vanilla JavaScript. Clone → Load → Done. No npm, no webpack, no headach
 1. Click the OpenCopilot icon in your browser toolbar
 2. Choose your AI provider:
    - **Fast & Cloud**: Groq, Gemini, OpenRouter
-   - **Private & Local**: Ollama (no data leaves your computer)
+   - **Private & Local**: Ollama, LM Studio (no data leaves your computer)
 3. Click the extension icon in your browser toolbar to activate on any webpage
 4. Start chatting with AI about the page!
 
@@ -108,6 +108,14 @@ OpenCopilot gives you the freedom to choose based on your priorities:
   - 🌍 **Works offline** - Internet connection not required
   - 💻 **Popular models**: Llama 3.2, Mistral, CodeLlama, Phi-3, and more
   - 📦 **Easy setup**: `ollama pull llama3.2` and you're ready!
+
+- **LM Studio** - 🖥️ **Desktop app for local AI with a beautiful UI**
+  - 🎨 **User-friendly interface** - Easy model management and testing
+  - 🔒 **100% Private** - All processing happens locally
+  - 🚀 **No API keys needed** - Free to use
+  - 💾 **Huge model library** - Browse and download models with one click
+  - ⚡ **Fast performance** - Optimized inference on your hardware
+  - 🌐 **OpenAI-compatible API** - Works seamlessly with OpenCopilot
   
 **Perfect for**: Sensitive work, privacy advocates, developers, offline usage, or anyone who wants full control over their AI.
 
@@ -244,6 +252,41 @@ ollama serve
 
 ---
 
+### 🖥️ LM Studio - Local AI with Beautiful UI
+
+**Why LM Studio?**
+- ✅ **User-Friendly** - Beautiful desktop app with intuitive interface
+- ✅ **100% Private** - All processing happens locally
+- ✅ **Completely FREE** - No API costs ever
+- ✅ **No Internet Required** - Works completely offline
+- ✅ **Huge Model Library** - Browse and download models with one click
+
+**Setup in 3 minutes:**
+
+1. **Download LM Studio**
+   - Visit [lmstudio.ai](https://lmstudio.ai)
+   - Download for Mac, Windows, or Linux
+   - Install and launch the app
+
+2. **Download a Model**
+   - Click "Search" in LM Studio
+   - Browse popular models (Llama, Mistral, Phi, etc.)
+   - Click download on your preferred model
+   - Wait for download to complete
+
+3. **Start Local Server**
+   - Click the "↔" Local Server tab in LM Studio
+   - Click "Start Server" (default port: 1234)
+   - Server will show "Running" status
+
+**In OpenCopilot:**
+1. Select "LM Studio" as your AI service
+2. URL: `http://localhost:1234` (default)
+3. Model will be auto-detected from LM Studio
+4. Done! Enjoy your local AI with a beautiful UI 🎨
+
+---
+
 ### ☁️ Cloud Providers (Fast, API Required)
 
 #### Groq (Fastest)
@@ -270,7 +313,7 @@ ollama serve
 ## 🌟 Why OpenCopilot?
 
 ### 🔐 Privacy & Control
-✅ **100% Local Option** - Use Ollama for complete privacy  
+✅ **100% Local Options** - Use Ollama or LM Studio for complete privacy  
 ✅ **Multi-Provider** - Choose cloud or local based on your needs  
 ✅ **Your Data, Your Choice** - No forced cloud services  
 
@@ -339,7 +382,7 @@ MIT License - Free for personal and commercial use
 ## 🎯 Use Cases
 
 ### 🔒 **Privacy-Conscious Users**
-Run Ollama locally and keep all your conversations on your machine. Perfect for:
+Run Ollama or LM Studio locally and keep all your conversations on your machine. Perfect for:
 - Analyzing confidential documents
 - Working with proprietary information
 - General privacy concerns
