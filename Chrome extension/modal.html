@@ -25,6 +25,8 @@
           <option value="groq">🚀 Groq</option>
           <option value="gemini">✨ Gemini</option>
           <option value="ollama">🦙 Ollama</option>
+          <option value="lmstudio">🖥️ LM Studio</option>
+          <option value="osaurus">🦖 Osaurus</option>
           <option value="openrouter">🌐 OpenRouter</option>
         </select>
       </div>
@@ -75,6 +77,27 @@
             <option value="">Loading models...</option>
           </select>
           <div class="settings-help" id="ollamaModelHelpModal">Select a model from your local Ollama instance</div>
+        </div>
+      </div>
+      
+      <!-- Osaurus Settings -->
+      <div id="osaurusSettings" class="service-settings" style="display: none;">
+        <div class="settings-info">
+          🦖 <strong>Osaurus:</strong> Native macOS LLM server. Install: <code>brew install dinoki-labs/tap/osaurus</code>
+        </div>
+        <div class="settings-group">
+          <label class="settings-label">Osaurus URL</label>
+          <input type="text" class="settings-input" id="osaurusUrlInput" placeholder="http://127.0.0.1:1337">
+        </div>
+        <div class="settings-group">
+          <label class="settings-label">
+            Model
+            <button type="button" class="settings-button" id="refreshOsaurusModelsModal" title="Refresh models" style="padding: 4px 8px; font-size: 12px; display: inline-block; margin-left: 8px;">🔄</button>
+          </label>
+          <select class="settings-select" id="osaurusModelInput">
+            <option value="foundation">foundation (Apple System Model)</option>
+          </select>
+          <div class="settings-help" id="osaurusModelHelpModal">Select a model from Osaurus</div>
         </div>
       </div>
       

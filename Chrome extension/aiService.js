@@ -1,4 +1,4 @@
-// AI Service integration for Groq, Gemini, Ollama, LM Studio, and OpenRouter
+// AI Service integration for Groq, Gemini, Ollama, LM Studio, Osaurus, and OpenRouter
 
 class AIService {
   constructor(settings) {
@@ -15,6 +15,8 @@ class AIService {
         return this.sendToOllama(messages, systemPrompt);
       case 'lmstudio':
         return this.sendToLMStudio(messages, systemPrompt);
+      case 'osaurus':
+        return this.sendToOsaurus(messages, systemPrompt);
       case 'openrouter':
         return this.sendToOpenRouter(messages, systemPrompt);
       case 'gemini':
@@ -118,6 +120,38 @@ class AIService {
       return data.choices[0].message.content;
     } catch (error) {
       throw new Error(`LM Studio connection failed: ${error.message}. Make sure LM Studio is running on ${lmstudioUrl}`);
+    }
+  }
+  
+  async sendToOsaurus(messages, systemPrompt) {
+    const { osaurusUrl = 'http://127.0.0.1:1337', osaurusModel = 'foundation' } = this.settings;
+    
+    const formattedMessages = systemPrompt 
+      ? [{ role: 'system', content: systemPrompt }, ...messages]
+      : messages;
+    
+    try {
+      const response = await fetch(`${osaurusUrl}/v1/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: osaurusModel,
+          messages: formattedMessages,
+          temperature: 0.7,
+          max_tokens: 2048
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Osaurus request failed. Make sure Osaurus is running.');
+      }
+      
+      const data = await response.json();
+      return data.choices[0].message.content;
+    } catch (error) {
+      throw new Error(`Osaurus connection failed: ${error.message}. Make sure Osaurus is running on ${osaurusUrl}`);
     }
   }
   

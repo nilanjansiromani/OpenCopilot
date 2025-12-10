@@ -1,12 +1,10 @@
-// Background script for Firefox - handling keyboard shortcuts and extension lifecycle
-// Firefox compatibility: Use browser API with chrome fallback
-const browserAPI = (typeof browser !== 'undefined') ? browser : chrome;
+// Background service worker for handling keyboard shortcuts and extension lifecycle
 
-// Log when the background script starts
-console.log('OpenCopilot background script started (Firefox)');
+// Log when the service worker starts
+console.log('OpenCopilot background service worker started');
 
 // Handle keyboard shortcuts
-browserAPI.commands.onCommand.addListener((command) => {
+chrome.commands.onCommand.addListener((command) => {
   console.log('Command received:', command);
   if (command === 'toggle-modal' || command === 'open-modal-alt') {
     // Open AI assistant modal (both shortcuts)
@@ -16,12 +14,12 @@ browserAPI.commands.onCommand.addListener((command) => {
     toggleSidebarOnActiveTab();
   } else if (command === 'open-settings') {
     // Open settings dashboard
-    browserAPI.runtime.openOptionsPage();
+    chrome.runtime.openOptionsPage();
   }
 });
 
-// Also toggle sidebar when extension icon is clicked
-browserAPI.action.onClicked.addListener((tab) => {
+// Also toggle sidebar when extension icon is clicked (alternative method for Arc browser)
+chrome.action.onClicked.addListener((tab) => {
   console.log('Extension icon clicked, toggling sidebar');
   toggleSidebarOnActiveTab();
 });
@@ -29,7 +27,7 @@ browserAPI.action.onClicked.addListener((tab) => {
 // Helper function to check if content script is loaded and inject if needed
 async function ensureContentScriptLoaded(tabId, url) {
   // Check if URL is a restricted page where content scripts can't run
-  const restrictedProtocols = ['chrome://', 'chrome-extension://', 'moz-extension://', 'about:', 'data:', 'file://'];
+  const restrictedProtocols = ['chrome://', 'chrome-extension://', 'edge://', 'about:', 'data:', 'file://'];
   if (restrictedProtocols.some(protocol => url.startsWith(protocol))) {
     console.log('Cannot inject content script on restricted page:', url);
     return false;
@@ -37,14 +35,14 @@ async function ensureContentScriptLoaded(tabId, url) {
   
   try {
     // Try to ping the content script
-    const response = await browserAPI.tabs.sendMessage(tabId, { action: 'ping' });
+    const response = await chrome.tabs.sendMessage(tabId, { action: 'ping' });
     console.log('Content script already loaded');
     return true;
   } catch (error) {
     console.log('Content script not loaded, injecting...');
     try {
       // Inject the content script
-      await browserAPI.scripting.executeScript({
+      await chrome.scripting.executeScript({
         target: { tabId: tabId },
         files: ['content.js']
       });
@@ -63,7 +61,7 @@ async function ensureContentScriptLoaded(tabId, url) {
 // Helper function to toggle sidebar on active tab
 async function toggleSidebarOnActiveTab() {
   try {
-    const tabs = await browserAPI.tabs.query({ active: true, currentWindow: true });
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tabs[0]) {
       console.error('No active tab found');
       return;
@@ -80,12 +78,14 @@ async function toggleSidebarOnActiveTab() {
     }
     
     // Send the toggle message
-    try {
-      const response = await browserAPI.tabs.sendMessage(tab.id, { action: 'toggleSidebar' });
-      console.log('Toggle sidebar response:', response);
-    } catch (error) {
-      console.error('Error sending toggleSidebar message:', error.message);
-    }
+    chrome.tabs.sendMessage(tab.id, { action: 'toggleSidebar' }, (response) => {
+      const lastError = chrome.runtime.lastError;
+      if (lastError) {
+        console.error('Error sending toggleSidebar message:', lastError.message);
+      } else if (response) {
+        console.log('Toggle sidebar response:', response);
+      }
+    });
   } catch (error) {
     console.error('Error in toggleSidebarOnActiveTab:', error);
   }
@@ -94,7 +94,7 @@ async function toggleSidebarOnActiveTab() {
 // Helper function to toggle modal on active tab
 async function toggleModalOnActiveTab() {
   try {
-    const tabs = await browserAPI.tabs.query({ active: true, currentWindow: true });
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tabs[0]) {
       console.error('No active tab found');
       return;
@@ -111,19 +111,21 @@ async function toggleModalOnActiveTab() {
     }
     
     // Send the toggle message
-    try {
-      const response = await browserAPI.tabs.sendMessage(tab.id, { action: 'toggleModal' });
-      console.log('Toggle modal response:', response);
-    } catch (error) {
-      console.error('Error sending toggleModal message:', error.message);
-    }
+    chrome.tabs.sendMessage(tab.id, { action: 'toggleModal' }, (response) => {
+      const lastError = chrome.runtime.lastError;
+      if (lastError) {
+        console.error('Error sending toggleModal message:', lastError.message);
+      } else if (response) {
+        console.log('Toggle modal response:', response);
+      }
+    });
   } catch (error) {
     console.error('Error in toggleModalOnActiveTab:', error);
   }
 }
 
 // Handle installation
-browserAPI.runtime.onInstalled.addListener((details) => {
+chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
     // Set default settings
     browserAPI.storage.sync.set({
@@ -138,33 +140,35 @@ browserAPI.runtime.onInstalled.addListener((details) => {
         ollamaUrl: 'http://localhost:11434',
         ollamaModel: 'granite4:350m',
         lmstudioUrl: 'http://localhost:1234',
-        lmstudioModel: 'local-model'
+        lmstudioModel: 'local-model',
+        osaurusUrl: 'http://127.0.0.1:1337',
+        osaurusModel: 'foundation'
       }
     });
     
     // Open settings page
-    browserAPI.tabs.create({ url: 'settings.html' });
+    chrome.tabs.create({ url: 'settings.html' });
   }
 });
 
 // Handle messages from content scripts
-browserAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'getSettings') {
-    browserAPI.storage.sync.get(['settings']).then((result) => {
+    chrome.storage.sync.get(['settings'], (result) => {
       sendResponse(result.settings || {});
     });
     return true; // Will respond asynchronously
   }
   
   if (request.action === 'saveSettings') {
-    browserAPI.storage.sync.set({ settings: request.settings }).then(() => {
+    chrome.storage.sync.set({ settings: request.settings }, () => {
       sendResponse({ success: true });
     });
     return true;
   }
   
   if (request.action === 'openSettings') {
-    browserAPI.runtime.openOptionsPage();
+    chrome.runtime.openOptionsPage();
     sendResponse({ success: true });
   }
 });

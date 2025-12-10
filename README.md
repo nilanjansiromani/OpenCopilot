@@ -84,7 +84,7 @@ Pure Vanilla JavaScript. Clone → Load → Done. No npm, no webpack, no headach
 1. Click the OpenCopilot icon in your browser toolbar
 2. Choose your AI provider:
    - **Fast & Cloud**: Groq, Gemini, OpenRouter
-   - **Private & Local**: Ollama, LM Studio (no data leaves your computer)
+   - **Private & Local**: Ollama, Osaurus (Apple Intelligence!), LM Studio
 3. Click the extension icon in your browser toolbar to activate on any webpage
 4. Start chatting with AI about the page!
 
@@ -108,6 +108,15 @@ OpenCopilot gives you the freedom to choose based on your priorities:
   - 🌍 **Works offline** - Internet connection not required
   - 💻 **Popular models**: Llama 3.2, Mistral, CodeLlama, Phi-3, and more
   - 📦 **Easy setup**: `ollama pull llama3.2` and you're ready!
+
+- **Osaurus** - 🦖 **Native macOS LLM server with Apple Intelligence**
+  - 🍎 **Apple Foundation Models** - Access Apple's system models on macOS 26+ (Tahoe)
+  - ⚡ **Lightning Fast** - Native Swift performance optimized for Apple Silicon
+  - 🔌 **MCP Server** - Full Model Context Protocol support with native tools
+  - 🔒 **100% Private** - All processing happens locally on your Mac
+  - 🚀 **No API keys needed** - Free to use
+  - 🌐 **OpenAI-compatible API** - Drop-in replacement for existing tools
+  - 📦 **One command install**: See [docs.osaurus.ai](https://docs.osaurus.ai)
 
 - **LM Studio** - 🖥️ **Desktop app for local AI with a beautiful UI**
   - 🎨 **User-friendly interface** - Easy model management and testing
@@ -273,7 +282,7 @@ ollama serve
    - Browse popular models (Llama, Mistral, Phi, etc.)
    - Click download on your preferred model
    - Wait for download to complete
-
+ 
 3. **Start Local Server**
    - Click the "↔" Local Server tab in LM Studio
    - Click "Start Server" (default port: 1234)
@@ -284,6 +293,43 @@ ollama serve
 2. URL: `http://localhost:1234` (default)
 3. Model will be auto-detected from LM Studio
 4. Done! Enjoy your local AI with a beautiful UI 🎨
+
+---
+
+### 🦖 Osaurus - Native macOS LLM with Apple Intelligence
+
+**Why Osaurus?**
+- ✅ **Apple Silicon Optimized** - Native Swift performance for M1/M2/M3
+- ✅ **Apple Foundation Models** - Use system models with zero configuration (macOS 26+)
+- ✅ **100% Private** - All processing happens locally
+- ✅ **Completely FREE** - No API costs ever
+- ✅ **MCP Tools** - Native browser automation, file system, git operations
+
+**Installation (macOS only):**
+
+```bash
+# Install Osaurus via Homebrew
+brew install dinoki-labs/tap/osaurus
+
+# Start Osaurus server
+osaurus serve
+```
+
+**Apple Foundation Models:**
+
+On macOS 26 (Tahoe) or later, access Apple's system models:
+- Model name: `foundation`
+- No download required - uses built-in Apple Intelligence
+- Best integration with macOS features
+- Optimized for your specific Mac hardware
+
+**In OpenCopilot:**
+1. Select "Osaurus" as your AI service
+2. URL: `http://127.0.0.1:1337` (default port)
+3. Model: Select `foundation` for Apple's system model, or choose from downloaded models
+4. Done! Ultra-fast native macOS AI 🦖
+
+Learn more at [docs.osaurus.ai](https://docs.osaurus.ai)
 
 ---
 
@@ -313,8 +359,9 @@ ollama serve
 ## 🌟 Why OpenCopilot?
 
 ### 🔐 Privacy & Control
-✅ **100% Local Options** - Use Ollama or LM Studio for complete privacy  
+✅ **100% Local Options** - Use Ollama, Osaurus, or LM Studio for complete privacy  
 ✅ **Multi-Provider** - Choose cloud or local based on your needs  
+✅ **Apple Intelligence** - Access Apple Foundation Models with Osaurus (macOS 26+)  
 ✅ **Your Data, Your Choice** - No forced cloud services  
 
 ### 🌐 Universal Compatibility
@@ -382,11 +429,12 @@ MIT License - Free for personal and commercial use
 ## 🎯 Use Cases
 
 ### 🔒 **Privacy-Conscious Users**
-Run Ollama or LM Studio locally and keep all your conversations on your machine. Perfect for:
+Run Ollama, Osaurus, or LM Studio locally and keep all your conversations on your machine. Perfect for:
 - Analyzing confidential documents
 - Working with proprietary information
 - General privacy concerns
 - Offline environments
+- **Mac users**: Use Osaurus for Apple Foundation Models!
 
 ### 💼 **Professionals & Students**
 - Research papers and articles

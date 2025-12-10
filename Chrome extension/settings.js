@@ -32,6 +32,7 @@ const sections = {
   gemini: document.getElementById('geminiSection'),
   ollama: document.getElementById('ollamaSection'),
   lmstudio: document.getElementById('lmstudioSection'),
+  osaurus: document.getElementById('osaurusSection'),
   openrouter: document.getElementById('openrouterSection')
 };
 const saveBtn = document.getElementById('saveBtn');
@@ -83,6 +84,11 @@ function updateSections() {
   // Fetch LM Studio models if LM Studio is selected
   if (selectedService === 'lmstudio') {
     fetchLMStudioModels();
+  }
+  
+  // Fetch Osaurus models if Osaurus is selected
+  if (selectedService === 'osaurus') {
+    fetchOsaurusModels();
   }
 }
 
@@ -212,6 +218,70 @@ async function fetchLMStudioModels() {
   }
 }
 
+// Fetch available models from Osaurus API
+async function fetchOsaurusModels() {
+  const osaurusUrl = document.getElementById('osaurusUrl').value || 'http://127.0.0.1:1337';
+  const osaurusModelSelect = document.getElementById('osaurusModel');
+  const refreshOsaurusModelsBtn = document.getElementById('refreshOsaurusModels');
+  const helpText = document.getElementById('osaurusModelHelp');
+  
+  // Store the currently selected value
+  const currentValue = osaurusModelSelect.value;
+  
+  // Show loading state
+  osaurusModelSelect.innerHTML = '<option value="">Loading models...</option>';
+  osaurusModelSelect.disabled = true;
+  refreshOsaurusModelsBtn.disabled = true;
+  
+  try {
+    const response = await fetch(`${osaurusUrl}/v1/models`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.data && data.data.length > 0) {
+      // Clear and populate dropdown with models
+      osaurusModelSelect.innerHTML = '';
+      
+      data.data.forEach(model => {
+        const option = document.createElement('option');
+        option.value = model.id;
+        option.textContent = model.id + (model.id === 'foundation' ? ' (Apple System Model)' : '');
+        osaurusModelSelect.appendChild(option);
+      });
+      
+      // Restore previously selected value if it exists in the list
+      if (currentValue && data.data.some(m => m.id === currentValue)) {
+        osaurusModelSelect.value = currentValue;
+      }
+      
+      helpText.textContent = `Found ${data.data.length} model(s) in Osaurus`;
+      helpText.className = 'form-help';
+      helpText.style.color = '#10b981';
+    } else {
+      osaurusModelSelect.innerHTML = '<option value="foundation">foundation (Apple System Model)</option>';
+      helpText.textContent = 'No models detected. Using default Apple Foundation model.';
+      helpText.style.color = '#f59e0b';
+    }
+  } catch (error) {
+    console.error('Error fetching Osaurus models:', error);
+    osaurusModelSelect.innerHTML = '<option value="foundation">foundation (Apple System Model)</option>';
+    helpText.textContent = `Error: ${error.message}. Make sure Osaurus is running at ${osaurusUrl}`;
+    helpText.style.color = '#ef4444';
+  } finally {
+    osaurusModelSelect.disabled = false;
+    refreshOsaurusModelsBtn.disabled = false;
+  }
+}
+
 // Load settings
 function loadSettings() {
   chrome.storage.sync.get(['settings'], (result) => {
@@ -259,6 +329,14 @@ function loadSettings() {
         document.getElementById('lmstudioModel').value = settings.lmstudioModel;
       }
       
+      // Osaurus settings
+      if (settings.osaurusUrl) {
+        document.getElementById('osaurusUrl').value = settings.osaurusUrl;
+      }
+      if (settings.osaurusModel) {
+        document.getElementById('osaurusModel').value = settings.osaurusModel;
+      }
+      
       // OpenRouter settings
       if (settings.openRouterApiKey) {
         document.getElementById('openRouterApiKey').value = settings.openRouterApiKey;
@@ -284,6 +362,8 @@ function saveSettings() {
     ollamaModel: document.getElementById('ollamaModel').value || 'llama2',
     lmstudioUrl: document.getElementById('lmstudioUrl').value,
     lmstudioModel: document.getElementById('lmstudioModel').value || 'local-model',
+    osaurusUrl: document.getElementById('osaurusUrl').value,
+    osaurusModel: document.getElementById('osaurusModel').value || 'foundation',
     openRouterApiKey: document.getElementById('openRouterApiKey').value,
     openRouterModel: document.getElementById('openRouterModel').value || 'anthropic/claude-3.5-sonnet'
   };
@@ -306,6 +386,11 @@ function saveSettings() {
   
   if (selectedService === 'lmstudio' && !settings.lmstudioUrl) {
     showStatus('Please enter your LM Studio URL', 'danger');
+    return;
+  }
+  
+  if (selectedService === 'osaurus' && !settings.osaurusUrl) {
+    showStatus('Please enter your Osaurus URL', 'danger');
     return;
   }
   
@@ -332,6 +417,8 @@ function resetSettings() {
       ollamaModel: 'llama2',
       lmstudioUrl: 'http://localhost:1234',
       lmstudioModel: 'local-model',
+      osaurusUrl: 'http://127.0.0.1:1337',
+      osaurusModel: 'foundation',
       openRouterApiKey: '',
       openRouterModel: 'anthropic/claude-3.5-sonnet'
     };
@@ -561,6 +648,12 @@ if (refreshLMStudioModelsBtn) {
   refreshLMStudioModelsBtn.addEventListener('click', fetchLMStudioModels);
 }
 
+// Osaurus refresh button
+const refreshOsaurusModelsBtn = document.getElementById('refreshOsaurusModels');
+if (refreshOsaurusModelsBtn) {
+  refreshOsaurusModelsBtn.addEventListener('click', fetchOsaurusModels);
+}
+
 // Fetch models when Ollama URL changes
 document.getElementById('ollamaUrl').addEventListener('blur', () => {
   const selectedService = document.querySelector('input[name="service"]:checked').value;
@@ -574,6 +667,14 @@ document.getElementById('lmstudioUrl').addEventListener('blur', () => {
   const selectedService = document.querySelector('input[name="service"]:checked').value;
   if (selectedService === 'lmstudio') {
     fetchLMStudioModels();
+  }
+});
+
+// Fetch models when Osaurus URL changes
+document.getElementById('osaurusUrl').addEventListener('blur', () => {
+  const selectedService = document.querySelector('input[name="service"]:checked').value;
+  if (selectedService === 'osaurus') {
+    fetchOsaurusModels();
   }
 });
 

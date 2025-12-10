@@ -72,6 +72,14 @@
             </div>
           </label>
           
+          <label class="service-card-dashboard" for="osaurus">
+            <input type="radio" id="osaurus" name="service" value="osaurus">
+            <div class="service-content">
+              <div class="service-icon-large">🦖</div>
+              <div class="service-name">Osaurus</div>
+            </div>
+          </label>
+          
           <label class="service-card-dashboard" for="openrouter">
             <input type="radio" id="openrouter" name="service" value="openrouter">
             <div class="service-content">
@@ -211,6 +219,58 @@
               </select>
               <div class="form-help" id="lmstudioModelHelp">
                 Select the loaded model from your LM Studio instance
+              </div>
+            </div>
+          </div>
+          
+          <!-- Osaurus Section -->
+          <div id="osaurusSection" class="section-config">
+            <h3 class="config-title">Osaurus Configuration</h3>
+            
+            <div class="alert-callout alert-info">
+              <div class="alert-icon">🦖</div>
+              <div class="alert-content">
+                <div class="alert-title">Osaurus - Native macOS LLM Server</div>
+                <div class="alert-text">
+                  Osaurus runs AI models locally on your Mac with Apple Silicon optimization.
+                  <br><br>
+                  <strong>Installation:</strong>
+                  <br>
+                  <code class="code-block">brew install dinoki-labs/tap/osaurus</code>
+                  <br><br>
+                  <strong>Start Osaurus:</strong>
+                  <br>
+                  <code class="code-block">osaurus serve</code>
+                  <br><br>
+                  <strong>Apple Foundation Models:</strong>
+                  <br>
+                  Use model name <code>foundation</code> to access Apple's system models (macOS 26+).
+                  <br><br>
+                  Learn more at <a href="https://docs.osaurus.ai" target="_blank">docs.osaurus.ai</a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="osaurusUrl" class="form-label">Osaurus URL</label>
+              <input type="text" class="form-control-dashboard" id="osaurusUrl" placeholder="http://127.0.0.1:1337" value="http://127.0.0.1:1337">
+              <div class="form-help">
+                Default is http://127.0.0.1:1337. Make sure Osaurus server is running.
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="osaurusModel" class="form-label">
+                Model Name
+                <button type="button" class="btn-icon" id="refreshOsaurusModels" title="Refresh models list">
+                  🔄
+                </button>
+              </label>
+              <select class="form-control-dashboard" id="osaurusModel">
+                <option value="foundation">foundation (Apple System Model)</option>
+              </select>
+              <div class="form-help" id="osaurusModelHelp">
+                Select a model from your Osaurus instance
               </div>
             </div>
           </div>

@@ -51,6 +51,7 @@ const serviceNames = {
   gemini: 'Gemini',
   ollama: 'Ollama',
   lmstudio: 'LM Studio',
+  osaurus: 'Osaurus',
   openrouter: 'OpenRouter'
 };
 
@@ -692,7 +693,11 @@ async function sendMessage(messageText = null) {
   
   if (!text || isLoading) return;
   
-  if (!settings || (!settings.groqApiKey && !settings.geminiApiKey && !settings.openRouterApiKey && settings.service !== 'ollama')) {
+  // Check for API keys only for cloud services (not local services)
+  const localServices = ['ollama', 'lmstudio', 'osaurus'];
+  const requiresApiKey = !localServices.includes(settings?.service);
+  
+  if (!settings || (requiresApiKey && !settings.groqApiKey && !settings.geminiApiKey && !settings.openRouterApiKey)) {
     showError('Please configure your API keys in settings first.');
     return;
   }
@@ -823,6 +828,8 @@ function populateSettingsPanel() {
   document.getElementById('ollamaModelInput').value = settings.ollamaModel || 'llama2';
   document.getElementById('lmstudioUrlInput').value = settings.lmstudioUrl || 'http://localhost:1234';
   document.getElementById('lmstudioModelInput').value = settings.lmstudioModel || 'local-model';
+  document.getElementById('osaurusUrlInput').value = settings.osaurusUrl || 'http://127.0.0.1:1337';
+  document.getElementById('osaurusModelInput').value = settings.osaurusModel || 'foundation';
   document.getElementById('openRouterApiKeyInput').value = settings.openRouterApiKey || '';
   document.getElementById('openRouterModelInput').value = settings.openRouterModel || 'anthropic/claude-3.5-sonnet';
   
@@ -836,6 +843,7 @@ function updateServiceSettingsVisibility() {
   document.getElementById('geminiSettings').style.display = selected === 'gemini' ? 'block' : 'none';
   document.getElementById('ollamaSettings').style.display = selected === 'ollama' ? 'block' : 'none';
   document.getElementById('lmstudioSettings').style.display = selected === 'lmstudio' ? 'block' : 'none';
+  document.getElementById('osaurusSettings').style.display = selected === 'osaurus' ? 'block' : 'none';
   document.getElementById('openrouterSettings').style.display = selected === 'openrouter' ? 'block' : 'none';
   
   // Fetch Ollama models if Ollama is selected
@@ -846,6 +854,11 @@ function updateServiceSettingsVisibility() {
   // Fetch LM Studio models if LM Studio is selected
   if (selected === 'lmstudio') {
     fetchLMStudioModelsSidebar();
+  }
+  
+  // Fetch Osaurus models if Osaurus is selected
+  if (selected === 'osaurus') {
+    fetchOsaurusModelsSidebar();
   }
 }
 
@@ -988,6 +1001,75 @@ async function fetchLMStudioModelsSidebar() {
   }
 }
 
+// Fetch available models from Osaurus API
+async function fetchOsaurusModelsSidebar() {
+  const osaurusUrl = document.getElementById('osaurusUrlInput').value || 'http://127.0.0.1:1337';
+  const osaurusModelSelect = document.getElementById('osaurusModelInput');
+  const helpText = document.getElementById('osaurusModelHelpSidebar') || document.getElementById('osaurusModelHelpModal');
+  const refreshBtn = document.getElementById('refreshOsaurusModelsSidebar') || document.getElementById('refreshOsaurusModelsModal');
+  
+  // Store the currently selected value
+  const currentValue = osaurusModelSelect.value;
+  
+  // Show loading state
+  osaurusModelSelect.innerHTML = '<option value="">Loading models...</option>';
+  osaurusModelSelect.disabled = true;
+  if (refreshBtn) refreshBtn.disabled = true;
+  
+  try {
+    const response = await fetch(`${osaurusUrl}/v1/models`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.data && data.data.length > 0) {
+      // Clear and populate dropdown with models
+      osaurusModelSelect.innerHTML = '';
+      
+      data.data.forEach(model => {
+        const option = document.createElement('option');
+        option.value = model.id;
+        option.textContent = model.id + (model.id === 'foundation' ? ' (Apple System Model)' : '');
+        osaurusModelSelect.appendChild(option);
+      });
+      
+      // Restore previously selected value if it exists in the list
+      if (currentValue && data.data.some(m => m.id === currentValue)) {
+        osaurusModelSelect.value = currentValue;
+      }
+      
+      if (helpText) {
+        helpText.textContent = `Found ${data.data.length} model(s) in Osaurus`;
+        helpText.style.color = '#10b981';
+      }
+    } else {
+      osaurusModelSelect.innerHTML = '<option value="foundation">foundation (Apple System Model)</option>';
+      if (helpText) {
+        helpText.textContent = 'No models detected. Using Apple Foundation model.';
+        helpText.style.color = '#f59e0b';
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching Osaurus models:', error);
+    osaurusModelSelect.innerHTML = '<option value="foundation">foundation (Apple System Model)</option>';
+    if (helpText) {
+      helpText.textContent = `Error: ${error.message}. Make sure Osaurus is running at ${osaurusUrl}`;
+      helpText.style.color = '#ef4444';
+    }
+  } finally {
+    osaurusModelSelect.disabled = false;
+    if (refreshBtn) refreshBtn.disabled = false;
+  }
+}
+
 // Toggle settings panel
 settingsBtn.addEventListener('click', () => {
   settingsPanel.classList.toggle('show');
@@ -1021,6 +1103,16 @@ if (refreshLMStudioModelsModalBtn) {
   refreshLMStudioModelsModalBtn.addEventListener('click', fetchLMStudioModelsSidebar);
 }
 
+// Refresh Osaurus models button
+const refreshOsaurusModelsSidebarBtn = document.getElementById('refreshOsaurusModelsSidebar');
+const refreshOsaurusModelsModalBtn = document.getElementById('refreshOsaurusModelsModal');
+if (refreshOsaurusModelsSidebarBtn) {
+  refreshOsaurusModelsSidebarBtn.addEventListener('click', fetchOsaurusModelsSidebar);
+}
+if (refreshOsaurusModelsModalBtn) {
+  refreshOsaurusModelsModalBtn.addEventListener('click', fetchOsaurusModelsSidebar);
+}
+
 // Fetch models when Ollama URL changes
 const ollamaUrlInput = document.getElementById('ollamaUrlInput');
 if (ollamaUrlInput) {
@@ -1041,6 +1133,16 @@ if (lmstudioUrlInput) {
   });
 }
 
+// Fetch models when Osaurus URL changes
+const osaurusUrlInput = document.getElementById('osaurusUrlInput');
+if (osaurusUrlInput) {
+  osaurusUrlInput.addEventListener('blur', () => {
+    if (serviceSelect.value === 'osaurus') {
+      fetchOsaurusModelsSidebar();
+    }
+  });
+}
+
 // Save settings
 saveSettingsBtn.addEventListener('click', () => {
   const newSettings = {
@@ -1053,6 +1155,8 @@ saveSettingsBtn.addEventListener('click', () => {
     ollamaModel: document.getElementById('ollamaModelInput').value || 'llama2',
     lmstudioUrl: document.getElementById('lmstudioUrlInput').value || 'http://localhost:1234',
     lmstudioModel: document.getElementById('lmstudioModelInput').value || 'local-model',
+    osaurusUrl: document.getElementById('osaurusUrlInput').value || 'http://127.0.0.1:1337',
+    osaurusModel: document.getElementById('osaurusModelInput').value || 'foundation',
     openRouterApiKey: document.getElementById('openRouterApiKeyInput').value,
     openRouterModel: document.getElementById('openRouterModelInput').value || 'anthropic/claude-3.5-sonnet'
   };
@@ -1072,6 +1176,7 @@ saveSettingsBtn.addEventListener('click', () => {
         case 'gemini': modelName = newSettings.geminiModel; break;
         case 'ollama': modelName = newSettings.ollamaModel; break;
         case 'lmstudio': modelName = newSettings.lmstudioModel; break;
+        case 'osaurus': modelName = newSettings.osaurusModel; break;
         case 'openrouter': modelName = newSettings.openRouterModel; break;
       }
       

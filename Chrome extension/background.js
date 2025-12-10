@@ -140,7 +140,9 @@ chrome.runtime.onInstalled.addListener((details) => {
         ollamaUrl: 'http://localhost:11434',
         ollamaModel: 'granite4:350m',
         lmstudioUrl: 'http://localhost:1234',
-        lmstudioModel: 'local-model'
+        lmstudioModel: 'local-model',
+        osaurusUrl: 'http://127.0.0.1:1337',
+        osaurusModel: 'foundation'
       }
     });
     
