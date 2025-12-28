@@ -333,11 +333,37 @@ function createFloatingPill() {
     <div class="pill-text">OpenCopilot</div>
   `;
   
+  // Load saved position or use defaults
+  const savedPosition = localStorage.getItem('opencopilot-pill-position');
+  let initialBottom = '20px';
+  let initialRight = '20px';
+  let initialTop = 'auto';
+  let initialLeft = 'auto';
+  
+  if (savedPosition) {
+    try {
+      const pos = JSON.parse(savedPosition);
+      // Validate saved position is still within viewport
+      if (pos.top !== undefined && pos.left !== undefined) {
+        const maxTop = window.innerHeight - 50;
+        const maxLeft = window.innerWidth - 150;
+        initialTop = Math.min(Math.max(0, pos.top), maxTop) + 'px';
+        initialLeft = Math.min(Math.max(0, pos.left), maxLeft) + 'px';
+        initialBottom = 'auto';
+        initialRight = 'auto';
+      }
+    } catch (e) {
+      console.log('Failed to parse saved pill position');
+    }
+  }
+  
   // Style the pill - using important to override any page styles
   pill.style.cssText = `
     position: fixed !important;
-    bottom: 20px !important;
-    right: 20px !important;
+    top: ${initialTop} !important;
+    left: ${initialLeft} !important;
+    bottom: ${initialBottom} !important;
+    right: ${initialRight} !important;
     display: flex !important;
     align-items: center !important;
     padding: 10px 18px !important;
@@ -348,9 +374,9 @@ function createFloatingPill() {
     font-size: 14px !important;
     font-weight: bold !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
-    cursor: pointer !important;
+    cursor: grab !important;
     z-index: 2147483647 !important; /* Highest possible z-index */
-    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease, visibility 0.3s ease !important;
+    transition: box-shadow 0.2s ease, opacity 0.3s ease, visibility 0.3s ease !important;
     user-select: none !important;
     opacity: 1 !important;
     visibility: visible !important;
@@ -364,24 +390,99 @@ function createFloatingPill() {
     font-size: 16px !important;
   `;
   
+  // Drag state variables
+  let isDragging = false;
+  let hasDragged = false;
+  let dragStartX = 0;
+  let dragStartY = 0;
+  let pillStartX = 0;
+  let pillStartY = 0;
+  
   // Add hover effect
   pill.addEventListener('mouseenter', () => {
-    pill.style.transform = 'translateY(-2px)';
-    pill.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.2)';
+    if (!isDragging) {
+      pill.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.2)';
+    }
   });
   
   pill.addEventListener('mouseleave', () => {
-    pill.style.transform = 'translateY(0)';
-    pill.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)';
+    if (!isDragging) {
+      pill.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)';
+    }
   });
   
-  // Add click event
-  pill.addEventListener('click', (e) => {
+  // Drag functionality
+  pill.addEventListener('mousedown', (e) => {
     e.preventDefault();
-    e.stopPropagation();
-    console.log('Floating pill clicked, toggling sidebar');
-    toggleSidebar();
+    isDragging = true;
+    hasDragged = false;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    
+    // Get current pill position
+    const rect = pill.getBoundingClientRect();
+    pillStartX = rect.left;
+    pillStartY = rect.top;
+    
+    pill.style.cursor = 'grabbing';
+    pill.style.transition = 'box-shadow 0.2s ease, opacity 0.3s ease, visibility 0.3s ease';
+    
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   });
+  
+  function onMouseMove(e) {
+    if (!isDragging) return;
+    
+    const deltaX = e.clientX - dragStartX;
+    const deltaY = e.clientY - dragStartY;
+    
+    // Consider it a drag if moved more than 5 pixels
+    if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+      hasDragged = true;
+    }
+    
+    // Calculate new position
+    let newLeft = pillStartX + deltaX;
+    let newTop = pillStartY + deltaY;
+    
+    // Constrain to viewport
+    const pillRect = pill.getBoundingClientRect();
+    const maxLeft = window.innerWidth - pillRect.width;
+    const maxTop = window.innerHeight - pillRect.height;
+    
+    newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+    newTop = Math.max(0, Math.min(newTop, maxTop));
+    
+    // Update position using top/left instead of bottom/right
+    pill.style.top = newTop + 'px';
+    pill.style.left = newLeft + 'px';
+    pill.style.bottom = 'auto';
+    pill.style.right = 'auto';
+  }
+  
+  function onMouseUp(e) {
+    if (!isDragging) return;
+    
+    isDragging = false;
+    pill.style.cursor = 'grab';
+    
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+    
+    // Save position to localStorage
+    const rect = pill.getBoundingClientRect();
+    localStorage.setItem('opencopilot-pill-position', JSON.stringify({
+      top: rect.top,
+      left: rect.left
+    }));
+    
+    // If it was just a click (no significant drag), toggle sidebar
+    if (!hasDragged) {
+      console.log('Floating pill clicked, toggling sidebar');
+      toggleSidebar();
+    }
+  }
   
   // Add to the body
   document.body.appendChild(pill);
