@@ -535,7 +535,11 @@ function addMessageWithoutSave(role, content, isError = false, timestamp = new D
   
   const avatar = document.createElement('div');
   avatar.className = `message-avatar ${role}-avatar`;
-  avatar.textContent = role === 'user' ? 'You' : '⚡';
+  if (role === 'user') {
+    avatar.textContent = 'You';
+  } else {
+    avatar.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11 22L12.5 16H8L13 2L11.5 8H16L11 22Z"/></svg>';
+  }
   
   const bubble = document.createElement('div');
   bubble.className = 'message-bubble';
@@ -634,7 +638,7 @@ function showTypingIndicator() {
   
   const avatar = document.createElement('div');
   avatar.className = 'message-avatar assistant-avatar';
-  avatar.textContent = '⚡';
+  avatar.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11 22L12.5 16H8L13 2L11.5 8H16L11 22Z"/></svg>';
   
   const bubble = document.createElement('div');
   bubble.className = 'message-bubble';
@@ -1219,20 +1223,25 @@ function loadTheme() {
 
 // Apply theme to document
 function applyTheme(theme) {
+  const moonIcon = document.querySelector('.icon-moon');
+  const sunIcon = document.querySelector('.icon-sun');
+  
   if (theme === 'light') {
     document.documentElement.classList.add('light-theme');
     document.body.classList.add('light-theme');
     if (themeToggleBtn) {
-      themeToggleBtn.textContent = '☀️';
       themeToggleBtn.title = 'Switch to Dark Theme';
     }
+    if (moonIcon) moonIcon.style.display = 'none';
+    if (sunIcon) sunIcon.style.display = 'block';
   } else {
     document.documentElement.classList.remove('light-theme');
     document.body.classList.remove('light-theme');
     if (themeToggleBtn) {
-      themeToggleBtn.textContent = '🌙';
       themeToggleBtn.title = 'Switch to Light Theme';
     }
+    if (moonIcon) moonIcon.style.display = 'block';
+    if (sunIcon) sunIcon.style.display = 'none';
   }
 }
 

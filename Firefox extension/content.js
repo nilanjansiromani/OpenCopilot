@@ -341,9 +341,13 @@ function createFloatingPill() {
   const pill = document.createElement('div');
   pill.id = 'opencopilot-floating-pill';
   
-  // Set inner HTML
+  // Set inner HTML with SVG icon
   pill.innerHTML = `
-    <div class="pill-icon">⚡</div>
+    <div class="pill-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M11 22L12.5 16H8L13 2L11.5 8H16L11 22Z"/>
+      </svg>
+    </div>
     <div class="pill-text">OpenCopilot</div>
   `;
   
@@ -401,7 +405,8 @@ function createFloatingPill() {
   const pillIcon = pill.querySelector('.pill-icon');
   pillIcon.style.cssText = `
     margin-right: 8px !important;
-    font-size: 16px !important;
+    display: flex !important;
+    align-items: center !important;
   `;
   
   // Drag state variables
