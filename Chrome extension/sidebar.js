@@ -428,7 +428,12 @@ function clearAllData() {
 
 // Listen for page content from parent
 window.addEventListener('message', (event) => {
-  if (event.data.type === 'PAGE_CONTENT') {
+  if (event.data.type === 'FOCUS_INPUT') {
+    // Focus the message input
+    if (messageInput) {
+      messageInput.focus();
+    }
+  } else if (event.data.type === 'PAGE_CONTENT') {
     pageContent = event.data.content;
     pageMarkdown = htmlToMarkdown(pageContent.htmlContent || '');
     
@@ -1193,6 +1198,57 @@ saveSettingsBtn.addEventListener('click', () => {
 closeError.addEventListener('click', hideError);
 
 // Quick prompts are now loaded dynamically in loadCustomPills()
+
+// Theme Toggle
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+
+// Load saved theme preference
+function loadTheme() {
+  chrome.storage.local.get(['theme'], (result) => {
+    const theme = result.theme || 'dark';
+    applyTheme(theme);
+  });
+}
+
+// Apply theme to document
+function applyTheme(theme) {
+  if (theme === 'light') {
+    document.documentElement.classList.add('light-theme');
+    document.body.classList.add('light-theme');
+    if (themeToggleBtn) {
+      themeToggleBtn.textContent = '☀️';
+      themeToggleBtn.title = 'Switch to Dark Theme';
+    }
+  } else {
+    document.documentElement.classList.remove('light-theme');
+    document.body.classList.remove('light-theme');
+    if (themeToggleBtn) {
+      themeToggleBtn.textContent = '🌙';
+      themeToggleBtn.title = 'Switch to Light Theme';
+    }
+  }
+}
+
+// Save theme preference
+function saveTheme(theme) {
+  chrome.storage.local.set({ theme: theme });
+}
+
+// Toggle theme
+function toggleTheme() {
+  const isLight = document.documentElement.classList.contains('light-theme');
+  const newTheme = isLight ? 'dark' : 'light';
+  applyTheme(newTheme);
+  saveTheme(newTheme);
+}
+
+// Theme toggle button click handler
+if (themeToggleBtn) {
+  themeToggleBtn.addEventListener('click', toggleTheme);
+}
+
+// Load theme on initialization
+loadTheme();
 
 // Auto-focus input
 messageInput.focus();

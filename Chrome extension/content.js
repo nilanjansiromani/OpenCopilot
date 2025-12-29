@@ -109,6 +109,13 @@ function toggleSidebar() {
         type: 'PAGE_CONTENT',
         content: pageContent
       }, '*');
+      
+      // Focus the input after sidebar is visible
+      setTimeout(() => {
+        sidebarIframe.contentWindow.postMessage({
+          type: 'FOCUS_INPUT'
+        }, '*');
+      }, 300);
     }, 10);
   } else {
     // Hide by moving off-screen and fading out
@@ -215,6 +222,13 @@ function toggleModal() {
     // Small delay to ensure visibility change is applied before animations
     setTimeout(() => {
       modalIframe.style.opacity = '1';
+      
+      // Focus the input after modal is visible
+      setTimeout(() => {
+        modalIframe.contentWindow.postMessage({
+          type: 'FOCUS_INPUT'
+        }, '*');
+      }, 300);
     }, 10);
     
     // Close sidebar if open
