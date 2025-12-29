@@ -794,6 +794,13 @@ closeBtn.addEventListener('click', () => {
   window.parent.postMessage({ type: 'CLOSE_SIDEBAR' }, '*');
 });
 
+// Escape key to close sidebar/modal
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    window.parent.postMessage({ type: 'CLOSE_SIDEBAR' }, '*');
+  }
+});
+
 // Clear buttons
 if (clearPageBtn) {
   clearPageBtn.addEventListener('click', clearCurrentPageChat);
